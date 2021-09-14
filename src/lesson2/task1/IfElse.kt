@@ -98,7 +98,7 @@ fun timeForHalfWay(
 
     return when {
         halfWay < s1 -> halfWay / v1
-        halfWay > s1 && halfWay < s1 + s2 -> (halfWay - s1) / v2 + t1
+        halfWay in s1..(s1 + s2) -> (halfWay - s1) / v2 + t1
         halfWay > s1 + s2 -> (halfWay - s1 - s2) / v3 + t1 + t2
         else -> 0.0
     }
@@ -119,10 +119,8 @@ fun whichRookThreatens(
     rookX2: Int, rookY2: Int
 ): Int {
     if (kingX == rookX1 || kingY == rookY1)
-        if (kingX == rookX2 || kingY == rookY2)
-            return 3 else return 1
-    if (kingX == rookX2 || kingY == rookY2)
-        return 2
+        return if (kingX == rookX2 || kingY == rookY2) 3 else 1
+    if (kingX == rookX2 || kingY == rookY2) return 2
     return 0
 }
 
@@ -142,10 +140,8 @@ fun rookOrBishopThreatens(
     bishopX: Int, bishopY: Int
 ): Int {
     if (kotlin.math.abs(kingX - bishopX) == kotlin.math.abs(kingY - bishopY))
-        if (kingX == rookX || kingY == rookY)
-            return 3 else return 2
-    if (kingX == rookX || kingY == rookY)
-        return 1
+        return if (kingX == rookX || kingY == rookY) 3 else 2
+    if (kingX == rookX || kingY == rookY) return 1
     return 0
 }
 
@@ -209,7 +205,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
                 minSide = a
             }
     // find cos
-    val cosG: Double = (medSide * medSide + minSide * minSide - maxSide * maxSide) / (2 * medSide * minSide)
+    val cosG = (medSide * medSide + minSide * minSide - maxSide * maxSide) / (2 * medSide * minSide)
     // check cos
     return when {
         cosG > 0 -> 0
