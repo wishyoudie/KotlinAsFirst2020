@@ -70,21 +70,15 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String {
-   if (age == 1) {
-       return "$age год"
-   } else if (age in 2..4) {
-       return "$age года"
-   } else if (age % 100 in 5..19) {
-       return "$age лет"
-   } else if (age % 10 == 0 || age % 10 in 5..9) {
-       return "$age лет"
-   } else if (age % 10 == 1) {
-       return "$age год"
-   } else {
-       return "$age года"
-   }
-}
+fun ageDescription(age: Int): String =
+    if (age == 1) "$age год"
+    else if (age in 2..4) "$age года"
+    else if (age % 100 in 5..19) "$age лет"
+    else if (age % 10 == 0 || age % 10 in 5..9) "$age лет"
+    else if (age % 10 == 1) "$age год"
+    else "$age года"
+
+
 /**
  * Простая (2 балла)
  *
@@ -97,15 +91,16 @@ fun timeForHalfWay(
     t2: Double, v2: Double,
     t3: Double, v3: Double
 ): Double {
-    val half_s = (v1 * t1 + v2 * t2 + v3 * t3) / 2.0
-    if (half_s <= t1 * v1) {
-        return half_s / v1
-    } else if (half_s > t1 * v1 && half_s <= t2 * v2 + t1 * v1) {
-        return t1 + (half_s - t1 * v1) / v2
+    val halfWay = (v1 * t1 + v2 * t2 + v3 * t3) / 2.0
+    if (halfWay <= t1 * v1) {
+        return halfWay / v1
+    } else if (halfWay > t1 * v1 && halfWay <= t2 * v2 + t1 * v1) {
+        return t1 + (halfWay - t1 * v1) / v2
     } else {
-        return t1 + t2 + (half_s - t1 * v1 - t2 * v2) / v3
+        return t1 + t2 + (halfWay - t1 * v1 - t2 * v2) / v3
     }
 }
+
 /**
  * Простая (2 балла)
  *
@@ -119,17 +114,12 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int {
-    if ((kingX == rookX1 || kingY == rookY1) && (kingX != rookX2 && kingY != rookY2)) {
-        return 1
-    } else if ((kingX == rookX2 || kingY == rookY2) && (kingX != rookX1 && kingY != rookY1)){
-        return 2
-    } else if ((kingX == rookX2 || kingY == rookY2) && (kingX == rookX1 || kingY == rookY1)){
-        return 3
-    } else {
-        return 0
-    }
-}
+): Int =
+    if ((kingX == rookX1 || kingY == rookY1) && (kingX != rookX2 && kingY != rookY2)) 1
+    else if ((kingX == rookX2 || kingY == rookY2) && (kingX != rookX1 && kingY != rookY1)) 2
+    else if ((kingX == rookX2 || kingY == rookY2) && (kingX == rookX1 || kingY == rookY1)) 3
+    else 0
+
 
 /**
  * Простая (2 балла)
@@ -145,17 +135,11 @@ fun rookOrBishopThreatens(
     kingX: Int, kingY: Int,
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
-): Int {
-    if ((rookX == kingX || rookY == kingY) && (abs(bishopX - kingX) != abs(bishopY - kingY))) {
-        return 1
-    } else if ((rookX != kingX && rookY != kingY) && (abs(bishopX - kingX) == abs(bishopY - kingY))) {
-        return 2
-    } else if ((rookX == kingX || rookY == kingY) && (abs(bishopX - kingX) == abs(bishopY - kingY))) {
-        return 3
-    } else {
-        return 0
-    }
-}
+): Int =
+    if ((rookX == kingX || rookY == kingY) && (abs(bishopX - kingX) != abs(bishopY - kingY))) 1
+    else if ((rookX != kingX && rookY != kingY) && (abs(bishopX - kingX) == abs(bishopY - kingY))) 2
+    else if ((rookX == kingX || rookY == kingY) && (abs(bishopX - kingX) == abs(bishopY - kingY))) 3
+    else 0
 
 /**
  * Простая (2 балла)
@@ -166,32 +150,21 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val maxSide: Double
-    if (a >= b && a >= c) {
-        maxSide = a
-    } else if (b >= a && b >= c) {
-        maxSide = b
-    } else {
-        maxSide = c
-    }
-    val minSide: Double
-    if (a <= b && a <= c) {
-        minSide = a
-    } else if (b <= a && b <= c) {
-        minSide = b
-    } else {
-        minSide = c
-    }
-    if ((maxSide * maxSide < minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) && (maxSide < minSide + (a + b + c - maxSide - minSide))) {
+    val maxSide: Double = maxOf(a, b, c)
+    val minSide: Double = minOf(a, b, c)
+    if ((maxSide * maxSide < minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) &&
+        (maxSide < minSide + (a + b + c - maxSide - minSide))) {
         return 0
-    } else if ((maxSide * maxSide == minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) && (maxSide < minSide + (a + b + c - maxSide - minSide))) {
+    } else if ((maxSide * maxSide == minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) &&
+        (maxSide < minSide + (a + b + c - maxSide - minSide))) {
         return 1
-    } else if ((maxSide * maxSide > minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) && (maxSide < minSide + (a + b + c - maxSide - minSide))) {
+    } else if ((maxSide * maxSide > minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) &&
+        (maxSide < minSide + (a + b + c - maxSide - minSide))) {
         return 2
     } else {
         return -1
     }
-    }
+}
 
 
 /**

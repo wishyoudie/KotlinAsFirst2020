@@ -2,6 +2,8 @@
 
 package lesson3.task1
 
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 // Урок 3: циклы
@@ -72,7 +74,15 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int {
+    var count = 0
+    var num = n
+    do {
+        count++
+        num /= 10
+    } while (num > 0)
+    return count
+}
 
 /**
  * Простая (2 балла)
@@ -80,21 +90,51 @@ fun digitNumber(n: Int): Int = TODO()
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = TODO()
+fun fib(n: Int): Int {
+    var valueActual = 1
+    var valuePrevious = 1
+    var valueInter: Int
+    if (n == 1) {
+        return valuePrevious
+    } else return if (n == 2) {
+        valueActual
+    } else {
+        for (i in 3..n) {
+            valueInter = valueActual
+            valueActual += valuePrevious
+            valuePrevious = valueInter
+        }
+        valueActual
+    }
+}
 
 /**
  * Простая (2 балла)
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = TODO()
+fun minDivisor(n: Int): Int {
+    var divider = 2
+    do {
+        if (n % divider == 0) break
+        divider++
+    } while (n != divider)
+    return divider
+}
 
 /**
  * Простая (2 балла)
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = TODO()
+fun maxDivisor(n: Int): Int {
+    var divider = n - 1
+    do {
+        if (n % divider == 0) break
+        divider--
+    } while (n != divider)
+    return divider
+}
 
 /**
  * Простая (2 балла)
@@ -112,7 +152,19 @@ fun maxDivisor(n: Int): Int = TODO()
  * Написать функцию, которая находит, сколько шагов требуется для
  * этого для какого-либо начального X > 0.
  */
-fun collatzSteps(x: Int): Int = TODO()
+fun collatzSteps(x: Int): Int {
+    var nextValue = x
+    var steps = 0
+    while (nextValue != 1) {
+        if (nextValue % 2 == 0) {
+            nextValue /= 2
+        } else {
+            nextValue = 3 * nextValue + 1
+        }
+        steps++
+    }
+    return steps
+}
 
 /**
  * Средняя (3 балла)
@@ -120,7 +172,17 @@ fun collatzSteps(x: Int): Int = TODO()
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int {
+    var k = 1
+    for (i in 1..(m * n)) {
+        if ((k % m == 0) && (k % n == 0)) {
+            break
+        } else {
+            k++
+        }
+    }
+    return k
+}
 
 /**
  * Средняя (3 балла)
