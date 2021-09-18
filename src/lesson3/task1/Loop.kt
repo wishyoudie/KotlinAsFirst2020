@@ -5,6 +5,9 @@ package lesson3.task1
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.abs
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
@@ -89,13 +92,21 @@ fun digitNumber(n: Int): Int {
  * Простая (2 балла)
  *
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
- * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
+ * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n) = fib(n - 2) + fib(n - 1)
  */
-fun fib(n: Int): Int =
-    when (n) {
-        1, 2 -> 1
-        else -> fib(n - 2) + fib(n - 1)
+fun fib(n: Int): Int {
+    var prev = 1
+    var preprev = 1
+    var i = 0
+    var s = 2
+    while (i < n - 2) {
+        s = prev + preprev
+        prev = preprev
+        preprev = s
+        i++
     }
+    return preprev
+}
 
 /**
  * Простая (2 балла)
@@ -153,7 +164,7 @@ fun collatzSteps(x: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    for (i in kotlin.math.max(m, n)..(m * n)) if (i % m == 0 && i % n == 0) return i
+    for (i in max(m, n)..(m * n)) if (i % m == 0 && i % n == 0) return i
     return m * n
 }
 
@@ -165,8 +176,8 @@ fun lcm(m: Int, n: Int): Int {
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
-    val x = kotlin.math.min(m, n)
-    val y = kotlin.math.max(m, n)
+    val x = min(m, n)
+    val y = max(m, n)
     if (x % 2 == 0 && y % 2 == 0) return false
     for (i in 3..x step 2) if (y % i == 0 && x % i == 0) return false
     return true
@@ -233,14 +244,14 @@ fun sin(x: Double, eps: Double): Double {
     var n = 1
     var tmp = 0.0
     var one = 2
-    var y = x
-    while (kotlin.math.abs(y) > 2 * PI) y -= (2 * PI)
+    val y = x % (2 * PI)
+    //while (abs(y) > 2 * PI) y -= (2 * PI)
     do {
         tmp = (-1.0).pow(one) * y.pow(n) / factorial(n)
         one++
         n += 2
         res += tmp
-    } while (kotlin.math.abs(tmp) > eps)
+    } while (abs(tmp) > eps)
     return res
 }
 
@@ -258,14 +269,14 @@ fun cos(x: Double, eps: Double): Double {
     var n = 0
     var tmp = 0.0
     var one = 2
-    var y = x
-    while (kotlin.math.abs(y) > 2 * PI) y -= (2 * PI)
+    val y = x % (2 * PI)
+    //while (abs(y) > 2 * PI) y -= (2 * PI)
     do {
         tmp = (-1.0).pow(one) * y.pow(n) / factorial(n)
         one++
         n += 2
         res += tmp
-    } while (kotlin.math.abs(tmp) > eps)
+    } while (abs(tmp) > eps)
     return res
 }
 
@@ -278,20 +289,7 @@ fun cos(x: Double, eps: Double): Double {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int {
-    // не уверен работает или нет, хранить последовательность не как строку
-    // занимает слишком много памяти. алгоритм вроде +- верный
-    var seq = 0
-    var sq = 0
-    for (i in 1..n) {
-        sq = i * i
-        seq *= (10.0.pow(digitNumber(sq))).toInt()
-        seq += sq
-    }
-    seq = revert(seq)
-    for (i in 1 until n - 1) sq /= 10
-    return sq % 10
-}
+fun squareSequenceDigit(n: Int): Int = TODO()
 
 /**
  * Сложная (5 баллов)
@@ -303,7 +301,3 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int = TODO()
-
-fun main() {
-    squareSequenceDigit(6)
-}

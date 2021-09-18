@@ -69,15 +69,14 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String {
-    return if (age !in 1..199) "Неверное число" else
-        if (age % 100 in 10..19) "$age лет" else
-            when (age % 10) {
-                1 -> "$age год"
-                in 2..4 -> "$age года"
-                else -> "$age лет"
-            }
-}
+fun ageDescription(age: Int): String =
+    if (age !in 1..199) "Неверное число"
+    else if (age % 100 in 10..19) "$age лет"
+    else when (age % 10) {
+        1 -> "$age год"
+        in 2..4 -> "$age года"
+        else -> "$age лет"
+    }
 
 /**
  * Простая (2 балла)
@@ -91,9 +90,9 @@ fun timeForHalfWay(
     t2: Double, v2: Double,
     t3: Double, v3: Double
 ): Double {
-    val s1: Double = t1 * v1
-    val s2: Double = t2 * v2
-    val s3: Double = t3 * v3
+    val s1 = t1 * v1
+    val s2 = t2 * v2
+    val s3 = t3 * v3
     val halfWay = (s1 + s2 + s3) / 2
 
     return when {
@@ -158,52 +157,9 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     if (a + b < c || a + c < b || b + c < a)
         return -1
     // sort sides
-    val maxSide: Double
-    val medSide: Double
-    val minSide: Double
-
-    if (a >= b)
-        if (b >= c)
-        // abc
-        {
-            maxSide = a
-            medSide = b
-            minSide = c
-        } else
-            if (a >= c)
-            // acb
-            {
-                maxSide = a
-                medSide = c
-                minSide = b
-            } else
-            // cab
-            {
-                maxSide = c
-                medSide = a
-                minSide = b
-            }
-    else
-        if (a >= c)
-        // bac
-        {
-            maxSide = b
-            medSide = a
-            minSide = c
-        } else
-            if (b >= c)
-            // bca
-            {
-                maxSide = b
-                medSide = c
-                minSide = a
-            } else
-            // cba
-            {
-                maxSide = c
-                medSide = b
-                minSide = a
-            }
+    val maxSide = maxOf(a, b, c)
+    val minSide = minOf(a, b, c)
+    val medSide = a + b + c - maxSide - minSide
     // find cos
     val cosG = (medSide * medSide + minSide * minSide - maxSide * maxSide) / (2 * medSide * minSide)
     // check cos
