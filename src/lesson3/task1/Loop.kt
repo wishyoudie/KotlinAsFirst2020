@@ -114,7 +114,7 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    for (i in 2..n) if (n % i == 0) return i
+    if (!isPrime(n)) for (i in 2..n) if (n % i == 0) return i
     return n
 }
 
@@ -124,7 +124,7 @@ fun minDivisor(n: Int): Int {
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
 fun maxDivisor(n: Int): Int {
-    for (i in n - 1 downTo 2) if (n % i == 0) return i
+    if (!isPrime(n)) for (i in n - 1 downTo 2) if (n % i == 0) return i
     return 1
 }
 
@@ -164,7 +164,7 @@ fun collatzSteps(x: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    for (i in max(m, n)..(m * n)) if (i % m == 0 && i % n == 0) return i
+    if (!isCoPrime(m, n)) for (i in max(m, n)..(m * n)) if (i % m == 0 && i % n == 0) return i
     return m * n
 }
 
@@ -178,6 +178,8 @@ fun lcm(m: Int, n: Int): Int {
 fun isCoPrime(m: Int, n: Int): Boolean {
     val x = min(m, n)
     val y = max(m, n)
+    if (y % x == 0) return false
+    if (isPrime(y) && isPrime(x)) return true
     if (x % 2 == 0 && y % 2 == 0) return false
     for (i in 3..x step 2) if (y % i == 0 && x % i == 0) return false
     return true
@@ -245,7 +247,6 @@ fun sin(x: Double, eps: Double): Double {
     var tmp = 0.0
     var one = 2
     val y = x % (2 * PI)
-    //while (abs(y) > 2 * PI) y -= (2 * PI)
     do {
         tmp = (-1.0).pow(one) * y.pow(n) / factorial(n)
         one++
@@ -270,7 +271,6 @@ fun cos(x: Double, eps: Double): Double {
     var tmp = 0.0
     var one = 2
     val y = x % (2 * PI)
-    //while (abs(y) > 2 * PI) y -= (2 * PI)
     do {
         tmp = (-1.0).pow(one) * y.pow(n) / factorial(n)
         one++
@@ -289,7 +289,20 @@ fun cos(x: Double, eps: Double): Double {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun squareSequenceDigit(n: Int): Int {
+    var curTotalDigNum = 0
+    var curNum = 1
+    var i = 1
+    var delta = -1
+    while (true) {
+        curNum = i * i
+        curTotalDigNum += digitNumber(curNum)
+        delta = curTotalDigNum - n
+        //println("$n, $curNum, $curTotalDigNum, $delta")
+        if (delta >= 0) return ((curNum % (10.0.pow(delta + 1).toInt()) - curNum % (10.0.pow(delta).toInt())) / 10.0.pow(delta).toInt())
+        i++
+    }
+}
 
 /**
  * Сложная (5 баллов)
@@ -300,4 +313,17 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var curTotalDigNum = 0
+    var curNum = 1
+    var i = 1
+    var delta = -1
+    while (true) {
+        curNum = fib(i)
+        curTotalDigNum += digitNumber(curNum)
+        delta = curTotalDigNum - n
+        //println("$n, $curNum, $curTotalDigNum, $delta")
+        if (delta >= 0) return ((curNum % (10.0.pow(delta + 1).toInt()) - curNum % (10.0.pow(delta).toInt())) / 10.0.pow(delta).toInt())
+        i++
+    }
+}
