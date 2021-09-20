@@ -2,9 +2,7 @@
 
 package lesson3.task1
 
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sqrt
+import kotlin.math.*
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
@@ -96,15 +94,15 @@ fun fib(n: Int): Int {
     var valueInter: Int
     if (n == 1) {
         return valuePrevious
-    } else return if (n == 2) {
-        valueActual
+    } else if (n == 2) {
+        return valueActual
     } else {
         for (i in 3..n) {
             valueInter = valueActual
             valueActual += valuePrevious
             valuePrevious = valueInter
         }
-        valueActual
+        return valueActual
     }
 }
 
@@ -191,7 +189,16 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = TODO()
+fun isCoPrime(m: Int, n: Int): Boolean {
+    for (i in 2..maxOf(m, n)) {
+        if ((m % i != 0) || (n % i != 0)) {
+            continue
+        } else {
+            return false
+        }
+    }
+    return true
+}
 
 /**
  * Средняя (3 балла)
@@ -200,7 +207,22 @@ fun isCoPrime(m: Int, n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun revert(n: Int): Int = TODO()
+fun revert(n: Int): Int {
+    var number: Int = n
+    var newNumber = 0.0
+    var numberLenght = 0
+    n.toDouble()
+    do {
+        number /= 10
+        numberLenght++
+    } while (number > 0)
+    number = n
+    for (i in 1..numberLenght) {
+        newNumber += (number % 10.0) * 10.0.pow(numberLenght - i)
+        number /= 10
+    }
+    return newNumber.toInt()
+}
 
 /**
  * Средняя (3 балла)
@@ -211,7 +233,24 @@ fun revert(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = TODO()
+fun isPalindrome(n: Int): Boolean {
+    var number: Int = n
+    var numberLenght = 0
+    do {
+        number /= 10
+        numberLenght++
+    } while (number > 0)
+    number = n
+    for (i in 1..numberLenght step 2) {
+        if (number % 10 == (number / 10.0.pow(numberLenght - i)).toInt()) {
+            number = (number % 10.0.pow(numberLenght - i) / 10.0).toInt()
+            continue
+        } else {
+            return false
+        }
+    }
+    return true
+}
 
 /**
  * Средняя (3 балла)
@@ -221,7 +260,28 @@ fun isPalindrome(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean {
+    var number: Int = n
+    var numberPrevious: Int = n % 10
+    var numberCurrent: Int
+    var numberLenght = 0
+    do {
+        number /= 10
+        numberLenght++
+    } while (number > 0)
+    number = n
+    for (i in 1..numberLenght) {
+        numberCurrent = number % 10
+        if (numberCurrent == numberPrevious) {
+            numberPrevious = numberCurrent
+            number /= 10
+            continue
+        } else {
+            return true
+        }
+    }
+    return false
+}
 
 /**
  * Средняя (4 балла)
@@ -232,7 +292,20 @@ fun hasDifferentDigits(n: Int): Boolean = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun sin(x: Double, eps: Double): Double = TODO()
+fun sin(x: Double, eps: Double): Double {
+    var sinValue = 0.0
+    var sign = 1
+    for (i in 1..50 step 2) {
+        sinValue += ((x % (2 * PI)).pow(i) / factorial(i)) * sign
+        if (abs(((x % (2 * PI)).pow(i) / factorial(i)) * sign) - eps < 0) {
+            break
+        } else {
+            sign *= -1
+            continue
+        }
+    }
+    return sinValue
+}
 
 /**
  * Средняя (4 балла)
@@ -243,7 +316,20 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun cos(x: Double, eps: Double): Double {
+    var cosValue = 1.0
+    var sign: Int = -1
+    for (i in 2..150 step 2) {
+        cosValue += ((x % (2 * PI)).pow(i) / factorial(i)) * sign
+        if (abs(((x % (2 * PI)).pow(i) / factorial(i)) * sign) - eps < 0) {
+            break
+        } else {
+            sign *= -1
+            continue
+        }
+    }
+    return cosValue
+}
 
 /**
  * Сложная (4 балла)
@@ -254,7 +340,29 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun squareSequenceDigit(n: Int): Int {
+    var expectedPos: Int = n
+    var number = 1
+    var numberSquare: Int
+    var numberSquareLenght = 0
+    do {
+        numberSquare = number * number
+        do {
+            numberSquare /= 10
+            numberSquareLenght++
+        } while (numberSquare > 0)
+        numberSquare = number * number
+        expectedPos -= numberSquareLenght
+        if (expectedPos > 0) {
+            number++
+            numberSquareLenght = 0
+            continue
+        } else {
+            break
+        }
+    } while (true)
+    return (numberSquare / 10.0.pow(abs(expectedPos)) % 10).toInt()
+}
 
 /**
  * Сложная (5 баллов)
@@ -265,4 +373,36 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var expectedPos: Int = n
+    var numberCurrent = 1
+    var numberCurrentDouble: Int
+    var numberPrevious = 1
+    var valueInter: Int
+    var numberCurrentLenght = 0
+    if (n == 1) {
+        return numberPrevious
+    } else if (n == 2) {
+        return numberCurrent
+    } else {
+        expectedPos -= 2
+        do {
+            valueInter = numberCurrent
+            numberCurrent += numberPrevious
+            numberPrevious = valueInter
+            numberCurrentDouble = numberCurrent
+            do {
+                numberCurrentDouble /= 10
+                numberCurrentLenght++
+            } while (numberCurrentDouble > 0)
+            expectedPos -= numberCurrentLenght
+            if (expectedPos > 0) {
+                numberCurrentLenght = 0
+                continue
+            } else {
+                break
+            }
+        } while (true)
+        return (numberCurrent / 10.0.pow(abs(expectedPos)) % 10).toInt()
+    }
+}
