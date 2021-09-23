@@ -179,7 +179,7 @@ fun isCoPrime(m: Int, n: Int): Boolean {
     val x = min(m, n)
     val y = max(m, n)
     if (x == 1 && y == 1) return true
-    if (y % x == 0) return false
+    if (y % x == 0 && x != 1) return false
     if (isPrime(y) && isPrime(x)) return true
     if (x % 2 == 0 && y % 2 == 0) return false
     for (i in 3..x step 2) if (y % i == 0 && x % i == 0) return false
@@ -327,4 +327,8 @@ fun fibSequenceDigit(n: Int): Int {
         if (delta >= 0) return ((curNum % (10.0.pow(delta + 1).toInt()) - curNum % (10.0.pow(delta).toInt())) / 10.0.pow(delta).toInt())
         i++
     }
+}
+
+fun main() {
+    println(isCoPrime(2, 1))
 }
