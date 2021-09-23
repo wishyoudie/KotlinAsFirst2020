@@ -178,6 +178,7 @@ fun lcm(m: Int, n: Int): Int {
 fun isCoPrime(m: Int, n: Int): Boolean {
     val x = min(m, n)
     val y = max(m, n)
+    if (x == 1 && y == 1) return true
     if (y % x == 0) return false
     if (isPrime(y) && isPrime(x)) return true
     if (x % 2 == 0 && y % 2 == 0) return false
