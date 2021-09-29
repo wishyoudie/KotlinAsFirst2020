@@ -92,12 +92,12 @@ fun timeForHalfWay(
     t3: Double, v3: Double
 ): Double {
     val halfWay = (v1 * t1 + v2 * t2 + v3 * t3) / 2.0
-    if (halfWay <= t1 * v1) {
-        return halfWay / v1
+    return if (halfWay <= t1 * v1) {
+        halfWay / v1
     } else if (halfWay > t1 * v1 && halfWay <= t2 * v2 + t1 * v1) {
-        return t1 + (halfWay - t1 * v1) / v2
+        t1 + (halfWay - t1 * v1) / v2
     } else {
-        return t1 + t2 + (halfWay - t1 * v1 - t2 * v2) / v3
+        t1 + t2 + (halfWay - t1 * v1 - t2 * v2) / v3
     }
 }
 
@@ -150,19 +150,20 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val maxSide: Double = maxOf(a, b, c)
-    val minSide: Double = minOf(a, b, c)
-    if ((maxSide * maxSide < minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) &&
-        (maxSide < minSide + (a + b + c - maxSide - minSide))) {
-        return 0
-    } else if ((maxSide * maxSide == minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) &&
-        (maxSide < minSide + (a + b + c - maxSide - minSide))) {
-        return 1
-    } else if ((maxSide * maxSide > minSide * minSide + (a + b + c - maxSide - minSide) * (a + b + c - maxSide - minSide)) &&
-        (maxSide < minSide + (a + b + c - maxSide - minSide))) {
-        return 2
+    val maxSide = maxOf(a, b, c)
+    val minSide = minOf(a, b, c)
+    val mediumSide = a + b + c - maxSide - minSide
+    return if ((maxSide * maxSide < minSide * minSide + mediumSide * mediumSide) &&
+        (maxSide < minSide + mediumSide)) {
+        0
+    } else if ((maxSide * maxSide == minSide * minSide + mediumSide * mediumSide) &&
+        (maxSide < minSide + (mediumSide))) {
+        1
+    } else if ((maxSide * maxSide > minSide * minSide + mediumSide * mediumSide) &&
+        (maxSide < minSide + mediumSide)) {
+        2
     } else {
-        return -1
+        -1
     }
 }
 
@@ -176,15 +177,15 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (a < c && b >= c && b < d) {
-        return b - c
+    return if (a < c && b >= c && b < d) {
+        b - c
     } else if (c < a && d >= a && d < b) {
-        return d - a
+        d - a
     } else if (a >= c && b <= d) {
-        return b - a
+        b - a
     } else if (c >= a && d <= b) {
-        return d - c
+        d - c
     } else {
-        return -1
+        -1
     }
 }
