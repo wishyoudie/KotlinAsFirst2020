@@ -157,16 +157,23 @@ fun collatzSteps(x: Int): Int {
     return steps
 }
 
+
+fun gcd(m: Int, n: Int): Int {
+    var x = m
+    var y = n
+    while (x != 0 && y != 0) {
+        if (x > y) x %= y else y %= x
+    }
+    return x + y
+}
+
 /**
  * Средняя (3 балла)
  *
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
-    if (!isCoPrime(m, n)) for (i in max(m, n)..(m * n)) if (i % m == 0 && i % n == 0) return i
-    return m * n
-}
+fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
 
 /**
  * Средняя (3 балла)
@@ -175,16 +182,7 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    val x = min(m, n)
-    val y = max(m, n)
-    if (x == 1 && y == 1) return true
-    if (y % x == 0 && x != 1) return false
-    if (isPrime(y) && isPrime(x)) return true
-    if (x % 2 == 0 && y % 2 == 0) return false
-    for (i in 3..x step 2) if (y % i == 0 && x % i == 0) return false
-    return true
-}
+fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
 
 /**
  * Средняя (3 балла)
