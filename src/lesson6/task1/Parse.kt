@@ -64,10 +64,7 @@ fun main() {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
     */
-    var s = "abcd(efg)"
-    s = s.substringBefore(')')
-    s = s.substringAfter('(')
-    println(s)
+    println(fromRoman("XCMICMCMV"))
 }
 
 
@@ -301,7 +298,20 @@ fun firstDuplicateIndex(str: String): Int {
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    var res = ""
+    if (description.isEmpty()) return res
+    val goods = description.split("; ")
+    var mPrice = 0.0
+    for (good in goods) {
+        val parts = good.split(" ")
+        if (parts[1].toDouble() > mPrice) {
+            res = parts[0]
+            mPrice = parts[1].toDouble()
+        }
+    }
+    return res
+}
 
 /**
  * Сложная (6 баллов)
@@ -314,7 +324,68 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    val ok = "IVXLCDM"
+    for (ch in roman) if (ch !in ok) return -1
+
+    var str = roman
+    var res = 0
+
+    while ("CM" in str) {
+        res += 900
+        str = str.substringBefore("CM") + str.substringAfter("CM")
+    }
+    while ("M" in str) {
+        res += 1000
+        str = str.substringBefore("M") + str.substringAfter("M")
+    }
+    while ("CD" in str) {
+        res += 400
+        str = str.substringBefore("CD") + str.substringAfter("CD")
+    }
+    while ("D" in str) {
+        res += 500
+        str = str.substringBefore("D") + str.substringAfter("D")
+    }
+    while ("XC" in str) {
+        res += 90
+        str = str.substringBefore("XC") + str.substringAfter("XC")
+    }
+    while ("C" in str) {
+        res += 100
+        str = str.substringBefore("C") + str.substringAfter("C")
+    }
+    while ("XL" in str) {
+        res += 40
+        str = str.substringBefore("XL") + str.substringAfter("XL")
+    }
+    while ("L" in str) {
+        res += 50
+        str = str.substringBefore("L") + str.substringAfter("L")
+    }
+    while ("IX" in str) {
+        res += 9
+        str = str.substringBefore("IX") + str.substringAfter("IX")
+    }
+    while ("X" in str) {
+        res += 10
+        str = str.substringBefore("X") + str.substringAfter("X")
+    }
+    while ("IV" in str) {
+        res += 4
+        str = str.substringBefore("IV") + str.substringAfter("IV")
+    }
+    while ("V" in str) {
+        res += 5
+        str = str.substringBefore("V") + str.substringAfter("V")
+    }
+    while ("I" in str) {
+        res += 1
+        str = str.substringBefore("I") + str.substringAfter("I")
+    }
+
+    return res
+}
 
 /**
  * Очень сложная (7 баллов)
