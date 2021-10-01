@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+import java.lang.NumberFormatException
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -48,7 +51,7 @@ fun timeSecondsToStr(seconds: Int): String {
  * Пример: консольный ввод
  */
 fun main() {
-    println("Введите время в формате ЧЧ:ММ:СС")
+    /*println("Введите время в формате ЧЧ:ММ:СС")
     val line = readLine()
     if (line != null) {
         val seconds = timeStrToSeconds(line)
@@ -60,6 +63,11 @@ fun main() {
     } else {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
+    */
+    var s = "abcd(efg)"
+    s = s.substringBefore(')')
+    s = s.substringAfter('(')
+    println(s)
 }
 
 
@@ -74,7 +82,38 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+    val preres = mutableListOf<Int>()
+    var res = ""
+    val months = listOf(
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря"
+    )
+    // check input
+    if (parts.size != 3 || parts[1] !in months) return res
+    preres += parts[0].toInt()
+    for (i in months.indices) if (parts[1] == months[i]) preres += i + 1
+    preres += parts[2].toInt()
+    // check logic
+    if (preres[0] > daysInMonth(preres[1], preres[2])) return res
+    if (preres[0] < 10) res += "0"
+    res += preres[0].toString() + "."
+    if (preres[1] < 10) res += "0"
+    res += preres[1].toString() + "."
+    res += preres[2].toString()
+    return res
+}
 
 /**
  * Средняя (4 балла)
@@ -86,7 +125,40 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val parts = digital.split(".")
+    // check input
+    if (parts.size != 3) return ""
+    try {
+        val partsInt = mutableListOf<Int>()
+
+        for (i in parts) partsInt += i.toInt()
+        // check logic
+        if (partsInt[0] > 31 || partsInt[1] > 12 || partsInt[1] < 1 || partsInt[0] > daysInMonth(
+                partsInt[1],
+                partsInt[2]
+            )
+        )
+            return ""
+        val months = listOf(
+            "января",
+            "февраля",
+            "марта",
+            "апреля",
+            "мая",
+            "июня",
+            "июля",
+            "августа",
+            "сентября",
+            "октября",
+            "ноября",
+            "декабря"
+        )
+        return partsInt[0].toString() + " " + months[partsInt[1] - 1] + " " + parts[2]
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+}
 
 /**
  * Средняя (4 балла)
@@ -102,7 +174,33 @@ fun dateDigitToStr(digital: String): String = TODO()
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    var res = ""
+    var addPlus = true
+    var i = 0
+    val ok = " +-()"
+    val digs = "0123456789"
+
+    // check for proper town code if exists
+    if ('(' in phone && ')' in phone) {
+        var s = phone.substringBefore(')')
+        s = s.substringAfter('(')
+        var flag = false
+        for (j in s) if (j in digs) flag = true
+        if (!flag) return ""
+    }
+
+    while (i != phone.length) {
+        if (phone[i] !in (ok + digs)) return ""
+        if (phone[i] == '+' && addPlus) {
+            res += '+'
+            addPlus = false
+        }
+        if (phone[i] in digs) res += phone[i]
+        i++
+    }
+    return res
+}
 
 /**
  * Средняя (5 баллов)
@@ -129,6 +227,12 @@ fun bestLongJump(jumps: String): Int = TODO()
  */
 fun bestHighJump(jumps: String): Int = TODO()
 
+fun safeToInt(s: String): Int {
+    val ok = "0123456789"
+    for (i in s) if (i !in ok) throw java.lang.IllegalArgumentException("Bad operation")
+    return s.toInt()
+}
+
 /**
  * Сложная (6 баллов)
  *
@@ -138,7 +242,26 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val parts = expression.split(" ")
+    var op = "+"
+    var res = 0
+    for (i in parts.indices) {
+        if (i % 2 == 0) {
+            try {
+                val x = safeToInt(parts[i])
+                when (op) {
+                    "+" -> res += x
+                    "-" -> res -= x
+                    else -> throw java.lang.IllegalArgumentException("Bad operation")
+                }
+            } catch (e: IllegalArgumentException) {
+                throw e
+            }
+        } else op = parts[i]
+    }
+    return res
+}
 
 /**
  * Сложная (6 баллов)
@@ -149,7 +272,23 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val words = str.split(" ")
+    var res = 0
+    var prev = ""
+    var index = -1
+    for (i in 1 until words.size) {
+        val word = words[i].lowercase()
+        if (prev == word) {
+            index = i - 1
+            break
+        }
+        prev = word
+    }
+    if (index == -1) return -1
+    for (i in 0 until index) res += words[i].length
+    return res + index
+}
 
 /**
  * Сложная (6 баллов)
