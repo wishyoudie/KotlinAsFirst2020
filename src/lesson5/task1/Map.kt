@@ -201,15 +201,18 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    var res = mapOf<String, Double>()
-    for (p in stockPrices) {
-        if (res.containsKey(p.first)) {
-            var tmp = res.get(p.first)
-            tmp = (tmp!! + p.second) / 2
-            res = res + Pair(p.first, tmp)
+    val goods = mutableMapOf<String, Pair<Int, Double>>()
+    val res = mutableMapOf<String, Double>()
+
+    for ((name, price) in stockPrices) {
+        if (goods[name] != null) {
+            goods[name] = Pair(goods[name]!!.first + 1, goods[name]!!.second + price)
         } else {
-            res = res + p
+            goods[name] = Pair(1, price)
         }
+    }
+    for (i in goods.keys) {
+        res[i] = goods[i]!!.second / goods[i]!!.first
     }
     return res
 }
@@ -230,15 +233,18 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+    if (stuff.isEmpty()) return null
     var res = ""
+    var flag = false
     var minPrice = Double.MAX_VALUE
     for ((name, p) in stuff) {
         if (p.first == kind && p.second < minPrice) {
             minPrice = p.second
             res = name
+            flag = true
         }
     }
-    return if (res == "") null else res
+    return if (flag) res else null
 }
 
 /**
@@ -251,6 +257,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    if (word == "") return true
     val letters = mutableSetOf<Char>()
     for (ch in word) letters.add(ch)
     return chars.toSet() == letters
