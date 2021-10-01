@@ -272,7 +272,7 @@ fun plusMinus(expression: String): Int {
 fun firstDuplicateIndex(str: String): Int {
     val words = str.split(" ")
     var res = 0
-    var prev = words[0]
+    var prev = words[0].lowercase()
     var index = -1
 
     for (i in 1 until words.size) {
@@ -306,7 +306,7 @@ fun mostExpensive(description: String): String {
     var mPrice = 0.0
     for (good in goods) {
         val parts = good.split(" ")
-        if (parts[1].toDouble() > mPrice) {
+        if (parts[1].toDouble() >= mPrice) {
             res = parts[0]
             mPrice = parts[1].toDouble()
         }
@@ -326,6 +326,7 @@ fun mostExpensive(description: String): String {
  * Вернуть -1, если roman не является корректным римским числом
  */
 fun fromRoman(roman: String): Int {
+    if (roman == "") return -1
     val ok = "IVXLCDM"
     for (ch in roman) if (ch !in ok) return -1
 

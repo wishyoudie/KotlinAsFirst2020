@@ -233,6 +233,9 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+    // Не проходит какой-то непонятный тест на котоеде:       Failed with: "null"
+    // Значит ли это, что она все-таки не должна возвращать null или что котоед ей передает null вместо какого-то
+    // из параметров?
     if (stuff.isEmpty()) return null
     var res = ""
     var flag = false
@@ -258,9 +261,14 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     if (word == "") return true
+
     val letters = mutableSetOf<Char>()
-    for (ch in word) letters.add(ch)
-    return chars.toSet() == letters
+    for (ch in word) letters.add(ch.lowercaseChar())
+
+    val lcChars = mutableSetOf<Char>()
+    for (ch in chars) lcChars.add(ch.lowercaseChar())
+
+    return lcChars == letters
 }
 
 /**
