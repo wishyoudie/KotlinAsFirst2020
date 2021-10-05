@@ -113,13 +113,11 @@ data class Segment(val begin: Point, val end: Point) {
 fun diameter(vararg points: Point): Segment {
     val pts = points.toList()
     var res = Segment(Point(0.0, 0.0), Point(0.0, 0.0))
-    try {
-        for (i in pts)
-            for (j in pts)
-                if (i.distance(j) > (res.begin.distance(res.end))) res = Segment(i, j)
-    } catch (e: IllegalArgumentException) {
-        throw e
-    }
+    if (pts.size < 2)
+        throw IllegalArgumentException("IllegalArgumentException")
+    for (i in pts)
+        for (j in pts)
+            if (i.distance(j) > (res.begin.distance(res.end))) res = Segment(i, j)
     return res
 }
 
@@ -177,7 +175,15 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line = Line(s.begin, atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x)))
+fun lineBySegment(s: Segment): Line {
+    val phi = when {
+        s.begin.x == s.end.x -> PI / 2
+        atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x)) >= 0 -> atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x))
+        else -> atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x)) + PI / 2
+    }
+
+    return Line(s.begin, phi)
+}
 
 /**
  * Средняя (3 балла)
@@ -191,10 +197,17 @@ fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
  *
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
-fun bisectorByPoints(a: Point, b: Point): Line = Line(
-    Point((a.x + b.x) / 2, (a.y + b.y) / 2),
-    if (atan((b.x - a.x) / (b.y - a.y)) < 0) PI / 2 - atan((b.y - a.y) / (b.x - a.x)) else atan((b.x - a.x) / (b.y - a.y))
-)
+fun bisectorByPoints(a: Point, b: Point): Line {
+    val p = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
+    val l = lineByPoints(a, b)
+    val phi = when {
+        l.angle > PI / 2 -> l.angle - PI / 2
+        l.angle == PI / 2 -> 0.0
+        l.angle == 0.0 -> PI / 2
+        else -> l.angle
+    }
+    return Line(p, phi)
+}
 
 /**
  * Средняя (3 балла)
@@ -211,17 +224,17 @@ fun bisectorByPoints(a: Point, b: Point): Line = Line(
 fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
     val crcls = circles.toList()
     var resf = Circle(Point(0.0, 0.0), 0.0)
-    var ress = Circle(Point(Double.MAX_VALUE, Double.MAX_VALUE), 0.0)
-    try {
-        for (i in crcls)
-            for (j in crcls)
-                if (i != j && i.distance(j) < resf.distance(ress)) {
-                    resf = i
-                    ress = j
-                }
-    } catch (e: IllegalArgumentException) {
-        throw e
-    }
+    var ress = Circle(Point(0.0, 0.0), 0.0)
+    var mDist = Double.MAX_VALUE
+    if (crcls.size < 2)
+        throw IllegalArgumentException("IllegalArgumentException")
+    for (i in crcls)
+        for (j in crcls)
+            if (i != j && i.distance(j) < mDist) {
+                resf = i
+                ress = j
+                mDist = resf.distance(ress)
+            }
     return Pair(resf, ress)
 }
 
@@ -247,6 +260,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
     return Circle(p, r)*/
     TODO()
 }
+
 /**
  * Очень сложная (10 баллов)
  *
@@ -261,4 +275,5 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle = TODO()
 
 fun main() {
+    println(bisectorByPoints(Point(0.0, 0.7918240464159133), Point(0.5448201180171204, -632.0)).angle)
 }

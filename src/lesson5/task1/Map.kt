@@ -233,15 +233,12 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    // Не проходит какой-то непонятный тест на котоеде:       Failed with: "null"
-    // Значит ли это, что она не должна возвращать null или что котоед ей передает null вместо какого-то
-    // из параметров?
     if (stuff.isEmpty()) return null
     var res = ""
     var flag = false
     var minPrice = Double.MAX_VALUE
     for ((name, p) in stuff) {
-        if (p.first == kind && p.second < minPrice) {
+        if (p.first == kind && p.second <= minPrice) {
             minPrice = p.second
             res = name
             flag = true
