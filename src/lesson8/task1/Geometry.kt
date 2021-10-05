@@ -259,7 +259,7 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle =
     Circle(
-        bisectorByPoints(a, b).crossPoint(bisectorByPoints(a, c)),
+        bisectorByPoints(a, c).crossPoint(bisectorByPoints(b, c)),
         a.distance(b) * b.distance(c) * c.distance(a) / 4 / Triangle(a, b, c).area()
     )
 
@@ -277,5 +277,11 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle =
 fun minContainingCircle(vararg points: Point): Circle = TODO()
 
 fun main() {
-
+    println(
+        circleByThreePoints(
+            Point(-632.0, 2.220446049250313e-16),
+            Point(0.8860283286616273, -632.0),
+            Point(0.11229310512682777, 2.220446049250313e-16)
+        ).center
+    )
 }
