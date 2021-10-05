@@ -212,7 +212,7 @@ fun bisectorByPoints(a: Point, b: Point): Line {
         l.angle > PI / 2 -> l.angle - PI / 2
         l.angle == PI / 2 -> 0.0
         l.angle == 0.0 -> PI / 2
-        else -> l.angle
+        else -> l.angle + PI / 2
     }
     return Line(p, phi)
 }
@@ -283,5 +283,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle = TODO()
 
 fun main() {
-    println(lineBySegment(Segment(Point(0.3011604971134595, -5e-324), Point(-632.0, 0.9950759631671499))).b)
+    val l = bisectorByPoints(Point(0.0, -632.0), Point(0.15243951767294173, 0.5407493484301163))
+    val k = lineBySegment(Segment(Point(0.0, -632.0), Point(0.15243951767294173, 0.5407493484301163)))
+    println(l.b)
 }
