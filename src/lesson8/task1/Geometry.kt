@@ -176,12 +176,20 @@ class Line private constructor(val b: Double, val angle: Double) {
  * Построить прямую по отрезку
  */
 fun lineBySegment(s: Segment): Line {
-    val phi = when {
-        s.begin.x == s.end.x -> PI / 2
-        atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x)) >= 0 -> atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x))
-        else -> atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x)) + PI / 2
+    val fst: Point
+    val scd: Point
+    if (s.end.y > s.begin.y) {
+        fst = s.begin
+        scd = s.end
+    } else {
+        fst = s.end
+        scd = s.begin
     }
-
+    val phi = when {
+        fst.x == scd.x -> PI / 2
+        (scd.y - fst.y) / (scd.x - fst.x) >= 0 -> atan((scd.y - fst.y) / (scd.x - fst.x))
+        else -> PI - atan((scd.y - fst.y) / (fst.x - scd.x))
+    }
     return Line(s.begin, phi)
 }
 
@@ -275,5 +283,5 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle = TODO()
 
 fun main() {
-    println(bisectorByPoints(Point(0.0, 0.7918240464159133), Point(0.5448201180171204, -632.0)).angle)
+    println(lineBySegment(Segment(Point(0.3011604971134595, -5e-324), Point(-632.0, 0.9950759631671499))).b)
 }
