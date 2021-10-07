@@ -170,26 +170,28 @@ fun collatzSteps(x: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
+fun lcd(m: Int, n: Int): Int {
     var maxNumber = maxOf(m, n)
     var minNumber = minOf(m, n)
     var remainder: Int
-    val nod: Int
+    var result = 0
     do {
         maxNumber -= minNumber
         if (maxNumber >= minNumber) {
             continue
         } else if (maxNumber == 0) {
-            nod = minNumber
+            result = minNumber
             break
         } else {
             remainder = maxNumber
             maxNumber = minNumber
             minNumber = remainder
         }
-    } while (true)
-    return m * n / nod
+    } while (maxNumber != 0)
+    return result
 }
+
+fun lcm(m: Int, n: Int): Int = m * n / lcd(m, n)
 
 /**
  * Средняя (3 балла)
@@ -198,26 +200,9 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    var maxNumber = maxOf(m, n)
-    var minNumber = minOf(m, n)
-    var remainder: Int
-    val nod: Int
-    do {
-        maxNumber -= minNumber
-        if (maxNumber >= minNumber) {
-            continue
-        } else if (maxNumber == 0) {
-            nod = minNumber
-            break
-        } else {
-            remainder = maxNumber
-            maxNumber = minNumber
-            minNumber = remainder
-        }
-    } while (true)
-    return nod == 1
-}
+
+fun isCoPrime(m: Int, n: Int): Boolean = lcd(m, n) == 1
+
 
 /**
  * Средняя (3 балла)
@@ -252,7 +237,6 @@ fun isPalindrome(n: Int): Boolean {
     for (i in 1..numberLenght step 2) {
         if (number % 10 == (number / 10.0.pow(numberLenght - i)).toInt()) {
             number = (number % 10.0.pow(numberLenght - i) / 10.0).toInt()
-            continue
         } else {
             return false
         }
@@ -305,7 +289,6 @@ fun sin(x: Double, eps: Double): Double {
             break
         } else {
             sign *= -1
-            continue
         }
     }
     return sinValue
@@ -331,7 +314,6 @@ fun cos(x: Double, eps: Double): Double {
             break
         } else {
             sign *= -1
-            continue
         }
     }
     return cosValue
@@ -354,12 +336,8 @@ fun squareSequenceDigit(n: Int): Int {
         numberSquare = number * number
         val numberSquareLenght = digitNumber(numberSquare)
         expectedPos -= numberSquareLenght
-        if (expectedPos > 0) {
-            number++
-        } else {
-            break
-        }
-    } while (true)
+        number++
+    } while (expectedPos > 0)
     return (numberSquare / 10.0.pow(abs(expectedPos)) % 10).toInt()
 }
 
@@ -389,8 +367,7 @@ fun fibSequenceDigit(n: Int): Int {
             numberPrevious = valueInter
             val numberCurrentLength = digitNumber(numberCurrent)
             expectedPos -= numberCurrentLength
-            if (expectedPos <= 0) break
-        } while (true)
+        } while (expectedPos > 0)
         return (numberCurrent / 10.0.pow(abs(expectedPos)) % 10).toInt()
     }
 }
