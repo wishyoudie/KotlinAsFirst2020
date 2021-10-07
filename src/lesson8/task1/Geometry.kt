@@ -258,15 +258,8 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    // пробовал через сер-перы, из-за многочисленных приближений получается несколько точек пересечения,
-    // а даже их средняя не подходит под ответ.
-    // maths src: http://algolist.ru/maths/geom/equation/circle.php
-    val ma = (b.y - a.y) / (b.x - a.x)
-    val mb = (c.y - b.y) / (c.x - b.x)
-    val x = (ma * mb * (a.y - c.y) + mb * (a.x + b.x) - ma * (b.x + c.x)) / 2 / (mb - ma)
-    val y = -1 / ma * (x - (a.x + b.x) / 2) + (a.y + b.y) / 2
-    val p = Point(x, y)
-    return Circle(p, a.distance(p))
+    // http://algolist.ru/maths/geom/equation/circle.php
+    TODO()
 }
 
 /**

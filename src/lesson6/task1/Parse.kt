@@ -64,7 +64,7 @@ fun main() {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
     */
-    println(fromRoman("XCMICMCMV"))
+    println(flattenPhoneNumber("+"))
 }
 
 
@@ -186,7 +186,7 @@ fun flattenPhoneNumber(phone: String): String {
         for (j in s) if (j in digs) flag = true
         if (!flag) return ""
     }
-
+    if ('+' in phone && digs.any().toString() !in phone) return ""
     while (i != phone.length) {
         if (phone[i] !in (ok + digs)) return ""
         if (phone[i] == '+' && addPlus) {
@@ -426,3 +426,4 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+

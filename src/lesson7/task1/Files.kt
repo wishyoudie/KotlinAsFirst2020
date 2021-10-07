@@ -152,7 +152,10 @@ fun centerFile(inputName: String, outputName: String) {
         if (line == "") continue
         var i = 0
         while (line[i] == ' ') i++
-        line = line.substring(i)
+        var k = line.length - 1
+        while (line[k] == ' ') k--
+        line = line.substring(i, k + 1)
+        println(line)
         lines[j] = line
         if (line.length > bigLen) bigLen = line.length
     }
