@@ -258,13 +258,15 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    val p1 = bisectorByPoints(a, c).crossPoint(bisectorByPoints(b, c))
-    val p2 = bisectorByPoints(a, b).crossPoint(bisectorByPoints(b, c))
-    val p3 = bisectorByPoints(a, c).crossPoint(bisectorByPoints(b, a))
-    val pres = Point((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3)
-    return Circle(
-        pres, a.distance(b) * b.distance(c) * c.distance(a) / 4 / Triangle(a, b, c).area()
-    )
+    // пробовал через сер-перы, из-за многочисленных приближений получается несколько точек пересечения,
+    // а даже их средняя не подходит под ответ.
+    // maths src: http://algolist.ru/maths/geom/equation/circle.php
+    val ma = (b.y - a.y) / (b.x - a.x)
+    val mb = (c.y - b.y) / (c.x - b.x)
+    val x = (ma * mb * (a.y - c.y) + mb * (a.x + b.x) - ma * (b.x + c.x)) / 2 / (mb - ma)
+    val y = -1 / ma * (x - (a.x + b.x) / 2) + (a.y + b.y) / 2
+    val p = Point(x, y)
+    return Circle(p, a.distance(p))
 }
 
 /**
@@ -281,11 +283,5 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle = TODO()
 
 fun main() {
-    println(
-        circleByThreePoints(
-            Point(-632.0, -5e-324),
-            Point(0.4463090487539051, -632.0),
-            Point(0.8878225013270024, -5e-324)
-        ).radius
-    )
+
 }
