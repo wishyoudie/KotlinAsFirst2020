@@ -177,16 +177,20 @@ fun flattenPhoneNumber(phone: String): String {
     var i = 0
     val ok = " +-()"
     val digs = "0123456789"
+    var flag = false
 
-    // check for proper town code if exists
     if ('(' in phone && ')' in phone) {
         var s = phone.substringBefore(')')
         s = s.substringAfter('(')
-        var flag = false
+        flag = false
         for (j in s) if (j in digs) flag = true
         if (!flag) return ""
     }
-    if ('+' in phone && digs.any().toString() !in phone) return ""
+    for (ch in digs) if (ch in phone) {
+        flag = true
+        break
+    }
+    if (!flag) return ""
     while (i != phone.length) {
         if (phone[i] !in (ok + digs)) return ""
         if (phone[i] == '+' && addPlus) {
