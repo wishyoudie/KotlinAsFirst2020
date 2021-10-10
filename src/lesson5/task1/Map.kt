@@ -2,10 +2,64 @@
 
 package lesson5.task1
 
+import java.util.ArrayDeque
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
 // Вместе с предыдущими уроками = 33/47
+
+class MyGraph {
+    private data class Vertex(val name: String) {
+        val neighbors = mutableSetOf<Vertex>()
+    }
+
+    private val vertices = mutableMapOf<String, Vertex>()
+
+    private operator fun get(name: String) = vertices[name] ?: throw IllegalArgumentException()
+
+    fun addVertex(name: String) {
+        vertices[name] = Vertex(name)
+    }
+
+    private fun connect(first: Vertex, second: Vertex) {
+        first.neighbors.add(second)
+        second.neighbors.add(first)
+    }
+
+    fun connect(first: String, second: String) = connect(this[first], this[second])
+
+    fun bfs(start: String, finish: String) = bfs(this[start], this[finish])
+
+    private fun bfs(start: Vertex, finish: Vertex): Int {
+        val queue = ArrayDeque<Vertex>()
+        queue.add(start)
+        val visited = mutableMapOf(start to 0)
+        while (queue.isNotEmpty()) {
+            val next = queue.poll()
+            val distance = visited[next]!!
+            if (next == finish) return distance
+            for (neighbor in next.neighbors) {
+                if (neighbor in visited) continue
+                visited[neighbor] = distance + 1
+                queue.add(neighbor)
+            }
+        }
+        return -1
+    }
+
+    fun dfs(start: String, finish: String): Int = dfs(this[start], this[finish], setOf()) ?: -1
+
+    private fun dfs(start: Vertex, finish: Vertex, visited: Set<Vertex>): Int? =
+        if (start == finish) 0
+        else {
+            val min = start.neighbors
+                .filter { it !in visited }
+                .mapNotNull { dfs(it, finish, visited + start) }
+                .minOrNull()
+            if (min == null) null else min + 1
+        }
+}
 
 /**
  * Пример
@@ -378,14 +432,24 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    if (list.isEmpty() || number < 0) return Pair(-1, -1)
-    val ind = mutableListOf<Int>()
-    for (i in 0 until number) ind.add(-1)
-    for (i in list.indices) {
-        val x = list[i]
-        if (x > number) continue
-        if (ind[x] != -1) return Pair(ind[x], i)
-        if (ind[number - x] == -1) ind[number - x] = i
+    if (list.isEmpty()) return Pair(-1, -1)
+    when {
+        number > 0 -> {
+            val ind = mutableListOf<Int>()
+            for (i in 0 until number) ind.add(-1)
+            for (i in list.indices) {
+                val x = list[i]
+                if (x > number) continue
+                if (ind[x] != -1) return Pair(ind[x], i)
+                if (ind[number - x] == -1) ind[number - x] = i
+            }
+        }
+        number < 0 -> return Pair(-1, -1)
+        number == 0 -> {
+            val ind = mutableListOf<Int>()
+            for (i in list.indices) if (list[i] == 0) ind.add(i)
+            if (ind.size >= 2) return Pair(ind[0], ind[1])
+        }
     }
     return Pair(-1, -1)
 }
