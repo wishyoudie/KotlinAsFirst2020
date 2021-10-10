@@ -11,7 +11,7 @@ import java.util.ArrayDeque
 
 class MyGraph {
     private data class Vertex(val name: String) {
-        val neighbors = mutableSetOf<Vertex>()
+        val heirs = mutableSetOf<Vertex>()
     }
 
     private val vertices = mutableMapOf<String, Vertex>()
@@ -23,8 +23,7 @@ class MyGraph {
     }
 
     private fun connect(first: Vertex, second: Vertex) {
-        first.neighbors.add(second)
-        second.neighbors.add(first)
+        first.heirs.add(second)
     }
 
     fun connect(first: String, second: String) = connect(this[first], this[second])
@@ -39,7 +38,7 @@ class MyGraph {
             val next = queue.poll()
             val distance = visited[next]!!
             if (next == finish) return distance
-            for (neighbor in next.neighbors) {
+            for (neighbor in next.heirs) {
                 if (neighbor in visited) continue
                 visited[neighbor] = distance + 1
                 queue.add(neighbor)
@@ -53,7 +52,7 @@ class MyGraph {
     private fun dfs(start: Vertex, finish: Vertex, visited: Set<Vertex>): Int? =
         if (start == finish) 0
         else {
-            val min = start.neighbors
+            val min = start.heirs
                 .filter { it !in visited }
                 .mapNotNull { dfs(it, finish, visited + start) }
                 .minOrNull()
@@ -412,7 +411,14 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "GoodGnome" to setOf()
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val tree = MyGraph()
+    for (i in friends.keys) {
+        tree.addVertex(i)
+    }
+    println(tree)
+    TODO()
+}
 
 /**
  * Сложная (6 баллов)
@@ -432,7 +438,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    if (list.isEmpty()) return Pair(-1, -1)
+    if (list.isEmpty() || list.size == 1) return Pair(-1, -1)
     when {
         number > 0 -> {
             val ind = mutableListOf<Int>()
