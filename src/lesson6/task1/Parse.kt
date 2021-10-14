@@ -230,7 +230,7 @@ fun bestHighJump(jumps: String): Int = TODO()
 
 fun safeToInt(s: String): Int {
     val ok = "0123456789"
-    for (i in s) if (i !in ok) throw java.lang.IllegalArgumentException("Bad operation")
+    for (i in s) if (i !in ok) throw IllegalArgumentException("Bad operation")
     return s.toInt()
 }
 
@@ -254,7 +254,7 @@ fun plusMinus(expression: String): Int {
                 when (op) {
                     "+" -> res += x
                     "-" -> res -= x
-                    else -> throw java.lang.IllegalArgumentException("Bad operation")
+                    else -> throw IllegalArgumentException("Bad operation")
                 }
             } catch (e: IllegalArgumentException) {
                 throw e
