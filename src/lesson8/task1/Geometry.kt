@@ -190,7 +190,7 @@ fun lineBySegment(s: Segment): Line {
         (scd.y - fst.y) / (scd.x - fst.x) >= 0 -> atan((scd.y - fst.y) / (scd.x - fst.x))
         else -> PI - atan((scd.y - fst.y) / (fst.x - scd.x))
     }
-    return Line(s.begin, phi)
+    return Line(s.begin, min(phi, PI - phi))
 }
 
 /**
