@@ -185,10 +185,11 @@ fun lineBySegment(s: Segment): Line {
         fst = s.end
         scd = s.begin
     }
+    val t = (scd.y - fst.y) / (scd.x - fst.x)
     val phi = when {
         fst.x == scd.x -> PI / 2
-        (scd.y - fst.y) / (scd.x - fst.x) >= 0 -> atan((scd.y - fst.y) / (scd.x - fst.x))
-        else -> PI + atan((scd.y - fst.y) / (fst.x - scd.x))
+        t >= 0 -> atan(t)
+        else -> PI + atan(t)
     }
 
     return Line(s.begin, phi)
