@@ -282,15 +282,13 @@ fun sin(x: Double, eps: Double): Double {
     var sinValue = 0.0
     var sign = 1
     var member: Double
-    for (i in 1..150 step 2) {
+    var i = 1
+    do {
         member = ((x % (2 * PI)).pow(i) / factorial(i)) * sign
         sinValue += member
-        if (abs(member) - eps < 0) {
-            break
-        } else {
-            sign *= -1
-        }
-    }
+        sign *= -1
+        i += 2
+    } while (abs(member) - eps >= 0)
     return sinValue
 }
 
@@ -307,15 +305,13 @@ fun cos(x: Double, eps: Double): Double {
     var cosValue = 1.0
     var sign: Int = -1
     var member: Double
-    for (i in 2..150 step 2) {
+    var i = 2
+    do {
         member = ((x % (2 * PI)).pow(i) / factorial(i)) * sign
         cosValue += member
-        if (abs(member) - eps < 0) {
-            break
-        } else {
-            sign *= -1
-        }
-    }
+        sign *= -1
+        i += 2
+    } while (abs(member) - eps >= 0)
     return cosValue
 }
 
