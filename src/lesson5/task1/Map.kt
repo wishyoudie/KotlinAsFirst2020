@@ -2,7 +2,7 @@
 
 package lesson5.task1
 
-import lesson4.task1.decimalFromString
+import kotlin.math.max
 import java.util.*
 
 // Урок 5: ассоциативные массивы и множества
@@ -490,7 +490,8 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    // Greedy [ O(NlogN) ]
+    /*
+    // Greedy [ O(NlogN) ] -> didn't pass Kotoed 50 sec time limit
     val density = mutableListOf<Pair<String, Double>>()
     for ((name, p) in treasures) {
         density.add(Pair(name, p.second / p.first.toDouble()))
@@ -504,6 +505,41 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             currentCapacity -= treasures[item.first]!!.first
         }
     }
+    return res
+    */
+
+    // Dynamic [ O(treasures.size * capacity) ]
+    val res = mutableSetOf<String>()
+
+    val items = mutableMapOf<Int, String>()
+    var z = 0
+    for ((name, p) in treasures) {
+        items[z] = name
+        z++
+    }
+
+    val f = Array(treasures.size + 1) { Array(capacity + 1) { 0 } }
+
+    for (i in 1..treasures.size)
+        for (k in 1..capacity) {
+            if (k >= treasures[items[i - 1]]!!.first)
+                f[i][k] =
+                    max(
+                        f[i - 1][k],
+                        f[i - 1][k - treasures[items[i - 1]]!!.first] + treasures[items[i - 1]]!!.second
+                    )
+            else
+                f[i][k] = f[i - 1][k]
+
+        }
+
+    var currentCapacity = capacity
+    for (i in treasures.size downTo 1)
+        if (f[i][currentCapacity] != f[i - 1][currentCapacity]) {
+            res.add(items[i - 1]!!)
+            currentCapacity -= treasures[items[i]]!!.first
+        }
+
     return res
 }
 
