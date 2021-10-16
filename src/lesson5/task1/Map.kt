@@ -2,6 +2,7 @@
 
 package lesson5.task1
 
+import lesson4.task1.decimalFromString
 import java.util.*
 
 // Урок 5: ассоциативные массивы и множества
@@ -488,19 +489,30 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    // Greedy [ O(NlogN) ]
+    val density = mutableListOf<Pair<String, Double>>()
+    for ((name, p) in treasures) {
+        density.add(Pair(name, p.second / p.first.toDouble()))
+    }
+    density.sortByDescending { it.second }
+    var currentCapacity = capacity
+    val res = mutableSetOf<String>()
+    for (item in density) {
+        if (currentCapacity - treasures[item.first]!!.first >= 0) {
+            res.add(item.first)
+            currentCapacity -= treasures[item.first]!!.first
+        }
+    }
+    return res
+}
 
 
 fun main() {
     println(
-        propagateHandshakes(
-            mapOf(
-                "Marat" to setOf("Mikhail", "Sveta"),
-                "Sveta" to setOf("Marat"),
-                "Mikhail" to setOf("Sveta"),
-                "Friend" to setOf("GoodGnome"),
-                "EvilGnome" to setOf()
-            )
+        bagPacking(
+            mapOf("Слиток" to (1000 to 5000), "Кубок" to (500 to 2000)),
+            850
         )
     )
 }

@@ -263,6 +263,17 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
     TODO()
 }
 
+
+fun checkLetters(str: String): Boolean {
+    var letters = setOf<Char>()
+    for (ch in str) {
+        val newLetters = letters
+        letters = letters + ch
+        if (newLetters == letters) return false
+    }
+    return true
+}
+
 /**
  * Средняя (12 баллов)
  *
@@ -288,7 +299,18 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val words = File(inputName).readLines().toMutableList()
+    val res = mutableListOf<String>()
+    var maxLen = 0
+    for (word in words) {
+        if (word.length >= maxLen && checkLetters(word.lowercase())) {
+            res.add(word)
+            maxLen = word.length
+        }
+    }
+    writer.write(res.joinToString(separator = ", "))
+    writer.close()
 }
 
 /**
@@ -507,3 +529,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     TODO()
 }
 
+fun main() {
+    println(checkLetters("новый"))
+    println(checkLetters("абобус"))
+}
