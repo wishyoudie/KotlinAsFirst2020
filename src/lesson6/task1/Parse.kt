@@ -3,7 +3,8 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
-import java.lang.NumberFormatException
+import kotlin.NumberFormatException
+import kotlin.math.max
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -213,8 +214,27 @@ fun flattenPhoneNumber(phone: String): String {
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    val attempts = jumps.split(" ")
+    var maxJump = -1
+    val ok = "-%0123456789"
+    for (attempt in attempts) {
+        if (attempt.length == 1 && attempt !in ok) return -1
+        try {
+            maxJump = max(maxJump, attempt.toInt())
+        } catch (e: NumberFormatException) {
+            continue
+        }
+    }
+    return maxJump
+}
 
+
+fun checkIfNotOk(str: String): Boolean {
+    val ok = "+-%"
+    for (ch in str) if (ch !in ok) return true
+    return false
+}
 /**
  * Сложная (6 баллов)
  *
@@ -226,7 +246,22 @@ fun bestLongJump(jumps: String): Int = TODO()
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    val attempts = mutableMapOf<Int, String>()
+    val tmp = jumps.split(" ")
+    for (i in 0..(tmp.size - 2) step 2) {
+        try {
+            attempts[tmp[i].toInt()] = tmp[i + 1]
+            if (checkIfNotOk(tmp[i + 1])) return -1
+        } catch (e: NumberFormatException) {
+            return -1
+        }
+    }
+    var maxJump = -1
+    for (j in attempts.keys) if (attempts[j]!![attempts[j]!!.length - 1] == '+') maxJump = max(maxJump, j)
+
+    return maxJump
+}
 
 fun safeToInt(s: String): Int {
     val ok = "0123456789"
