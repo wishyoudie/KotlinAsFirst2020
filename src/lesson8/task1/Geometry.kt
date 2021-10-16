@@ -211,7 +211,11 @@ fun bisectorByPoints(a: Point, b: Point): Line {
         l.angle > PI / 2 -> l.angle - PI / 2
         else -> 0.0
     }
-    return Line(p, phi)
+    try {
+        return Line(p, phi)
+    } catch (e: IllegalArgumentException) {
+        return Line(p, phi - PI)
+    }
 }
 
 /**
