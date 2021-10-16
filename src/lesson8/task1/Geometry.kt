@@ -3,7 +3,7 @@
 package lesson8.task1
 
 import lesson1.task1.sqr
-import java.lang.IllegalArgumentException
+import kotlin.IllegalArgumentException
 import kotlin.math.*
 
 // Урок 8: простые классы
@@ -188,7 +188,11 @@ fun lineBySegment(s: Segment): Line {
     val t = (scd.y - fst.y) / (scd.x - fst.x)
     var phi = atan(t)
     if (phi < 0) phi += PI
-    return Line(s.begin, phi)
+    return try {
+        Line(s.begin, phi)
+    } catch (e: IllegalArgumentException) {
+        Line(s.begin, phi - PI)
+    }
 }
 
 /**
@@ -211,10 +215,10 @@ fun bisectorByPoints(a: Point, b: Point): Line {
         l.angle > PI / 2 -> l.angle - PI / 2
         else -> 0.0
     }
-    try {
-        return Line(p, phi)
+    return try {
+        Line(p, phi)
     } catch (e: IllegalArgumentException) {
-        return Line(p, phi - PI)
+        Line(p, phi - PI)
     }
 }
 
