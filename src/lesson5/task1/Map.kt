@@ -2,13 +2,14 @@
 
 package lesson5.task1
 
-import java.lang.NullPointerException
 import java.util.*
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
 // Вместе с предыдущими уроками = 33/47
+
+// Stolen from lesson 8, changed neighbours to heirs <=> one-side connection, added toMap method
 class MyGraph {
     private data class Vertex(val name: String) {
         val heirs = mutableSetOf<Vertex>()
@@ -17,24 +18,6 @@ class MyGraph {
     private val vertices = mutableMapOf<String, Vertex>()
 
     private operator fun get(name: String) = vertices[name] ?: throw IllegalArgumentException()
-
-    private fun cmp(th: MyGraph, ot: MyGraph): Boolean {
-        for ((name, vert) in ot.vertices) {
-            try {
-                if (th.vertices[name]!!.heirs != vert.heirs) {
-                    println("F")
-                    return false
-                }
-            } catch (e: NullPointerException) {
-                return false
-            }
-        }
-        return true
-    }
-
-    override fun equals(other: Any?) =
-        other is MyGraph && cmp(this, other)
-
 
     fun addVertex(name: String) {
         vertices[name] = Vertex(name)
@@ -50,6 +33,7 @@ class MyGraph {
         if (first != second) connect(this[first], this[second])
     }
 
+    // Turn graph into map
     fun toMap(): Map<String, Set<String>> {
         val res = mutableMapOf<String, Set<String>>()
         for ((name, vert) in vertices) {
@@ -62,53 +46,6 @@ class MyGraph {
         }
         return res
     }
-
-    /**
-     * Пример
-     *
-     * По двум вершинам рассчитать расстояние между ними = число дуг на самом коротком пути между ними.
-     * Вернуть -1, если пути между вершинами не существует.
-     *
-     * Используется поиск в ширину
-     */
-    fun bfs(start: String, finish: String) = bfs(this[start], this[finish])
-
-    private fun bfs(start: Vertex, finish: Vertex): Int {
-        val queue = ArrayDeque<Vertex>()
-        queue.add(start)
-        val inheritors = mutableMapOf(start to 0)
-        while (queue.isNotEmpty()) {
-            val next = queue.poll()
-            val distance = inheritors[next]!!
-            if (next == finish) return distance
-            for (heir in next.heirs) {
-                if (heir in inheritors) continue
-                inheritors[heir] = distance + 1
-                queue.add(heir)
-            }
-        }
-        return -1
-    }
-
-    /**
-     * Пример
-     *
-     * По двум вершинам рассчитать расстояние между ними = число дуг на самом коротком пути между ними.
-     * Вернуть -1, если пути между вершинами не существует.
-     *
-     * Используется поиск в глубину
-     */
-    fun dfs(start: String, finish: String): Int = dfs(this[start], this[finish], setOf()) ?: -1
-
-    private fun dfs(start: Vertex, finish: Vertex, visited: Set<Vertex>): Int? =
-        if (start == finish) 0
-        else {
-            val min = start.heirs
-                .filter { it !in visited }
-                .mapNotNull { dfs(it, finish, visited + start) }
-                .minOrNull()
-            if (min == null) null else min + 1
-        }
 }
 
 
@@ -429,23 +366,6 @@ fun hasAnagrams(words: List<String>): Boolean {
     return false
 }
 
-/*
-    fun go(person: String, visited: Set<String>): MutableSet<String> {
-        val newSet = mutableSetOf<String>()
-        if (friends[person] == null)
-            return newSet
-        newSet += friends[person]!! - visited
-        for (newPerson in newSet)
-            newSet += go(newPerson, visited + newPerson)
-        return newSet
-    }
-    // [Marat, Mikhail, Sveta, Friend, GoodGnome, EvilGnome]
-    for (person in people) {
-        val resSet = go(person, setOf())
-        res[person] = resSet
-    }
-    return res */
-
 /**
  * Сложная (5 баллов)
  *
@@ -483,24 +403,28 @@ fun hasAnagrams(words: List<String>): Boolean {
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val g = MyGraph()
     val people = mutableSetOf<String>()
-    // Create full people list
+    var mod: Map<String, Set<String>>
+    // Create full people set
     for (person in friends.keys) {
         people.add(person)
         for (anotherPerson in friends[person]!!)
             people.add(anotherPerson)
     }
     // Create vertices
-    /*for (person in people) g.addVertex(person)
-    // Create connections (how many times?)
-    while () {
+    for (person in people) g.addVertex(person)
+    // Create connections (how many times? : solved with while)
+    do {
+        val newMod = g.toMap()
         for (person in people) {
             if (friends[person] != null)
                 for (anotherPerson in friends[person]!!)
                     g.connect(person, anotherPerson)
         }
-    }
-    return g.toMap()*/
-    TODO()
+        mod = g.toMap()
+        // Пытался написать функцию сравнения для непосредственно графов, с ней было бы эффективнее, но не получилось.
+    } while (newMod != mod)
+
+    return g.toMap()
 }
 
 /**
