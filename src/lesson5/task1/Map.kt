@@ -538,7 +538,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     for (i in treasures.size downTo 1)
         if (f[i][currentCapacity] != f[i - 1][currentCapacity]) {
             res.add(items[i - 1]!!)
-            currentCapacity -= treasures[items[i]]!!.first
+            currentCapacity -= treasures[items[i - 1]]!!.first
         }
 
     return res
