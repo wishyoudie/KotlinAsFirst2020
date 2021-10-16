@@ -304,7 +304,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     val words = File(inputName).readLines().toMutableList()
     val res = mutableListOf<String>()
     var maxLen = 0
-    for (word in words) maxLen = max(maxLen, word.length)
+    for (word in words) if (checkLetters(word.lowercase())) maxLen = max(maxLen, word.length)
     for (word in words) {
         if (word.length == maxLen && checkLetters(word.lowercase())) {
             res.add(word)
@@ -532,6 +532,6 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
 }
 
 fun main() {
-    println(checkLetters("новый"))
-    println(checkLetters("абобус"))
+    println(checkLetters("a"))
+    println(checkLetters("aa"))
 }

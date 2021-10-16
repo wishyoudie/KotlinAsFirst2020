@@ -490,6 +490,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    if (treasures.isEmpty() || capacity == 0) return setOf()
     /*
     // Greedy [ O(NlogN) ] -> didn't pass Kotoed 50 sec time limit
     val density = mutableListOf<Pair<String, Double>>()
