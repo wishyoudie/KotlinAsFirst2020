@@ -186,12 +186,8 @@ fun lineBySegment(s: Segment): Line {
         scd = s.begin
     }
     val t = (scd.y - fst.y) / (scd.x - fst.x)
-    val phi = when {
-        fst.x == scd.x -> PI / 2
-        fst.y == scd.y -> 0.0
-        t > 0 -> atan(t)
-        else -> PI + atan(t)
-    }
+    var phi = atan(t)
+    if (phi < 0) phi += PI
     return Line(s.begin, phi)
 }
 
@@ -211,12 +207,10 @@ fun bisectorByPoints(a: Point, b: Point): Line {
     val p = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     val l = lineByPoints(a, b)
     val phi = when {
-        l.angle == 0.0 -> PI / 2
-        l.angle == PI / 2 -> 0.0
+        l.angle < PI / 2 -> l.angle + PI / 2
         l.angle > PI / 2 -> l.angle - PI / 2
-        else -> l.angle + PI / 2
+        else -> 0.0
     }
-
     return Line(p, phi)
 }
 
@@ -277,5 +271,5 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle = TODO()
 
 fun main() {
-
+    println(atan(Double.POSITIVE_INFINITY))
 }
