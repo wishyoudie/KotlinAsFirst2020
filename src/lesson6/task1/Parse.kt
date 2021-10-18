@@ -5,6 +5,7 @@ package lesson6.task1
 import lesson2.task2.daysInMonth
 import kotlin.NumberFormatException
 import kotlin.math.max
+import kotlin.math.min
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -47,27 +48,6 @@ fun timeSecondsToStr(seconds: Int): String {
     val second = seconds % 60
     return String.format("%02d:%02d:%02d", hour, minute, second)
 }
-
-/**
- * Пример: консольный ввод
- */
-fun main() {
-    /*println("Введите время в формате ЧЧ:ММ:СС")
-    val line = readLine()
-    if (line != null) {
-        val seconds = timeStrToSeconds(line)
-        if (seconds == -1) {
-            println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
-        } else {
-            println("Прошло секунд с начала суток: $seconds")
-        }
-    } else {
-        println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
-    }
-    */
-    println(flattenPhoneNumber("+"))
-}
-
 
 /**
  * Средняя (4 балла)
@@ -235,6 +215,7 @@ fun checkIfNotOk(str: String): Boolean {
     for (ch in str) if (ch !in ok) return true
     return false
 }
+
 /**
  * Сложная (6 баллов)
  *
@@ -464,5 +445,91 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    fun check(str: String): Boolean {
+        val ok = " <>+-[]"
+        for (ch in str) if (ch !in ok) return false
+        if (str.count { it == '[' } != str.count { it == ']' }) return false
+        return true
+    }
 
+    fun findNestedLoop(cmds: String, start: Int): String {
+        val field = cmds.substring(start + 1)
+        var nL = ""
+        var toFind = 1
+        var cur = 0
+        while (toFind != 0) {
+            when (field[cur]) {
+                '[' -> {
+                    toFind++
+                    nL += field[cur]
+                }
+                ']' -> {
+                    toFind--
+                    if (toFind != 0) nL += field[cur]
+                }
+                else -> nL += field[cur]
+            }
+            cur++
+        }
+        return nL
+    }
+
+
+    var currentCell = cells / 2
+    var commandsLeft = limit
+    if (!check(commands)) throw IllegalArgumentException("")
+    val res = mutableListOf<Int>()
+    for (i in 0 until cells) res.add(0)
+
+    fun executeCommands(cmds: String, finish: Int, res: MutableList<Int>): List<Int> {
+        var currentCommand = 0
+        while (currentCommand < finish && commandsLeft > 0) {
+            if (currentCell !in 0..cells) throw IllegalStateException("")
+            when (cmds[currentCommand]) {
+                '>' -> {
+                    currentCell++
+                    commandsLeft--
+                }
+                '<' -> {
+                    currentCell--
+                    commandsLeft--
+                }
+                '+' -> {
+                    res[currentCell]++
+                    commandsLeft--
+                }
+                '-' -> {
+                    res[currentCell]--
+                    commandsLeft--
+                }
+                '[' -> {
+                    val nestedLoop = findNestedLoop(cmds, currentCommand)
+                    while (res[currentCell] != 0 && commandsLeft > 0) {
+                        executeCommands(nestedLoop, nestedLoop.length, res)
+                        commandsLeft -= 2 // <- ??
+                    }
+                    commandsLeft--
+                    currentCommand += nestedLoop.length + 1
+                }
+                else -> commandsLeft--
+            }
+            currentCommand++
+            print("$commandsLeft / $limit    $res\n")
+        }
+
+        return res
+    }
+
+    //aaa[bb]aaa
+    //0123456789
+
+    executeCommands(commands, min(limit, commands.length), res)
+
+    return res
+}
+
+fun main() {
+    println(computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 256))
+    println(listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2))
+}
