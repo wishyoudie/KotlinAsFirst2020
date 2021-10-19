@@ -455,24 +455,52 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 
     fun findNestedLoop(cmds: String, start: Int): String {
         val field = cmds.substring(start + 1)
-        var nL = ""
+        val sb = StringBuilder()
         var toFind = 1
         var cur = 0
         while (toFind != 0) {
             when (field[cur]) {
                 '[' -> {
                     toFind++
-                    nL += field[cur]
+                    sb.append(field[cur])
                 }
                 ']' -> {
                     toFind--
-                    if (toFind != 0) nL += field[cur]
+                    if (toFind != 0) sb.append(field[cur])
                 }
-                else -> nL += field[cur]
+                else -> sb.append(field[cur])
             }
             cur++
         }
-        return nL
+        return "$sb"
+    }
+
+    fun findReversedNestedLoop(cmds: String, end: Int): String {
+        val sb = StringBuilder()
+        var i = 0
+        while (i != end) {
+            sb.append(cmds[i])
+            i++
+        }
+        val field = sb.toString()
+        sb.clear()
+        i--
+        var toFind = 1
+        while (toFind != 0) {
+            when (field[i]) {
+                ']' -> {
+                    toFind++
+                    sb.append(field[i])
+                }
+                '[' -> {
+                    toFind--
+                    if (toFind != 0) sb.append(field[i])
+                }
+                else -> sb.append(field[i])
+            }
+            i--
+        }
+        return "$sb".reversed()
     }
 
 
@@ -485,44 +513,33 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     fun executeCommands(cmds: String, finish: Int, res: MutableList<Int>): List<Int> {
         var currentCommand = 0
         while (currentCommand < finish && commandsLeft > 0) {
-            if (currentCell !in 0..cells) throw IllegalStateException("")
+            if (currentCell !in 0 until cells) throw IllegalStateException("")
             when (cmds[currentCommand]) {
-                '>' -> {
-                    currentCell++
-                    commandsLeft--
-                }
-                '<' -> {
-                    currentCell--
-                    commandsLeft--
-                }
-                '+' -> {
-                    res[currentCell]++
-                    commandsLeft--
-                }
-                '-' -> {
-                    res[currentCell]--
-                    commandsLeft--
-                }
+                '>' -> currentCell++
+                '<' -> currentCell--
+                '+' -> res[currentCell]++
+                '-' -> res[currentCell]--
                 '[' -> {
-                    val nestedLoop = findNestedLoop(cmds, currentCommand)
-                    while (res[currentCell] != 0 && commandsLeft > 0) {
-                        executeCommands(nestedLoop, nestedLoop.length, res)
-                        commandsLeft -= 2 // <- ??
+                    if (res[currentCell] == 0) {
+                        val nestedLoop = findNestedLoop(cmds, currentCommand)
+                        currentCommand += nestedLoop.length + 1
                     }
-                    commandsLeft--
-                    currentCommand += nestedLoop.length + 1
                 }
-                else -> commandsLeft--
+                ']' -> {
+                    if (res[currentCell] != 0) {
+                        val reversedNestedLoop = findReversedNestedLoop(cmds, currentCommand)
+                        currentCommand -= (reversedNestedLoop.length + 1)
+                    }
+                }
+                else -> {}
             }
+            commandsLeft--
             currentCommand++
-            print("$commandsLeft / $limit    $res\n")
+            //print("$commandsLeft / $limit    $res\n")
         }
 
         return res
     }
-
-    //aaa[bb]aaa
-    //0123456789
 
     executeCommands(commands, min(limit, commands.length), res)
 
@@ -531,5 +548,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 
 fun main() {
     println(computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 256))
-    println(listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2))
+    //println(computeDeviceCells(10, "+>+>+>+>+", 10000))
+    //println(listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2))
 }
