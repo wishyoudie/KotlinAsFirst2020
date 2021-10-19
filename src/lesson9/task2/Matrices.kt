@@ -187,10 +187,6 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
     return res
 }
 
-fun main() {
-    println(generateSnake(5, 4).toLineString())
-}
-
 /**
  * Средняя (3 балла)
  *
