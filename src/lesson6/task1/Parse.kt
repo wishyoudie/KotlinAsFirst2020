@@ -537,6 +537,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             currentCommand++
             //print("$commandsLeft / $limit    $res\n")
         }
+        if (currentCell !in 0 until cells) throw IllegalStateException("")
 
         return res
     }
@@ -547,7 +548,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 }
 
 fun main() {
-    println(computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 256))
+    println(computeDeviceCells(1, "<", 500))
     //println(computeDeviceCells(10, "+>+>+>+>+", 10000))
     //println(listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2))
 }

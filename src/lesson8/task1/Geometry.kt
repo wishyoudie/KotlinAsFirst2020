@@ -113,7 +113,7 @@ data class Segment(val begin: Point, val end: Point) {
 fun diameter(vararg points: Point): Segment {
     val pts = points.toList()
     var res = Segment(Point(0.0, 0.0), Point(0.0, 0.0))
-    if (pts.size < 2)
+    if (pts.size < 2 || (pts.size == 2 && pts[0] == pts[1]))
         throw IllegalArgumentException("IllegalArgumentException")
     for (i in pts)
         for (j in pts)
@@ -279,5 +279,5 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle = TODO()
 
 fun main() {
-    println(atan(Double.POSITIVE_INFINITY))
+    println(diameter(Point(1.0, 1.0), Point(1.0, 1.0)))
 }
