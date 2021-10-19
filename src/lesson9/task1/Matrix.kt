@@ -37,9 +37,9 @@ interface Matrix<E> {
     operator fun set(cell: Cell, value: E)
 
     /**
-     * Привести к строке табличного вида
+     * Привести к строке табличного вида: для дебаггинга
      */
-    fun toLineString(): String
+    //fun toLineString(): String
 }
 
 /**
@@ -122,7 +122,7 @@ class MatrixImpl<E>(
         sb.append("]]")
         return "$sb"
     }
-
+    /*
     override fun toLineString(): String {
         val sb = StringBuilder()
         for (h in 0 until height) {
@@ -135,7 +135,7 @@ class MatrixImpl<E>(
             sb.append("]\n")
         }
         return "$sb"
-    }
+    }*/
 
     override fun hashCode(): Int {
         var result = height
@@ -143,10 +143,4 @@ class MatrixImpl<E>(
         result = 31 * result + values.hashCode()
         return result
     }
-}
-
-fun main() {
-    val m = createMatrix(3, 3, 0)
-    println(m.toString())
-    println(m.toLineString())
 }
