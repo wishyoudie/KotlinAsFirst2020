@@ -35,6 +35,11 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
+
+    /**
+     * Привести к строке табличного вида
+     */
+    fun toLineString(): String
 }
 
 /**
@@ -44,32 +49,104 @@ interface Matrix<E> {
  * height = высота, width = ширина, e = чем заполнить элементы.
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
-fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = TODO()
+fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(height, width, e)
+
+fun <E> createMatrix(height: Int, width: Int, values: List<List<E>>): Matrix<E> {
+    val matrix = createMatrix(height, width, values[0][0])
+    for (row in 0 until height) {
+        for (column in 0 until width) {
+            matrix[row, column] = values[row][column]
+        }
+    }
+    return matrix
+}
 
 /**
  * Средняя сложность (считается двумя задачами в 3 балла каждая)
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E> : Matrix<E> {
-    override val height: Int = TODO()
+class MatrixImpl<E>(
+    override val height: Int, override val width: Int,
+    e: E
+) : Matrix<E> {
+    private val values = mutableMapOf<Cell, E>()
 
-    override val width: Int = TODO()
+    init {
+        if (height < 1 || width < 1) throw IndexOutOfBoundsException("Can't create matrix with such metrics")
+        for (h in 0 until height)
+            for (w in 0 until width)
+                values[Cell(h, w)] = e
+    }
 
-    override fun get(row: Int, column: Int): E = TODO()
+    override fun get(row: Int, column: Int): E =
+        values[Cell(row, column)] ?: throw IndexOutOfBoundsException("No such cell")
 
-    override fun get(cell: Cell): E = TODO()
+    override fun get(cell: Cell): E = get(cell.row, cell.column)
 
     override fun set(row: Int, column: Int, value: E) {
-        TODO()
+        if (values[Cell(row, column)] != null)
+            values[Cell(row, column)] = value
+        else
+            throw IndexOutOfBoundsException("No such cell")
     }
 
     override fun set(cell: Cell, value: E) {
-        TODO()
+        set(cell.row, cell.column, value)
     }
 
-    override fun equals(other: Any?) = TODO()
+    override fun equals(other: Any?) =
+        other is MatrixImpl<*> &&
+                height == other.height &&
+                width == other.width &&
+                values == other.values
 
-    override fun toString(): String = TODO()
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append("[")
+        for (h in 0 until height - 1) {
+            sb.append("[")
+            for (w in 0 until width - 1) {
+                sb.append(values[Cell(h, w)]!!)
+                sb.append(", ")
+            }
+            sb.append(values[Cell(h, width - 1)]!!)
+            sb.append("], ")
+        }
+        sb.append("[")
+        for (w in 0 until width - 1) {
+            sb.append(values[Cell(height - 1, w)]!!)
+            sb.append(", ")
+        }
+        sb.append(values[Cell(height - 1, width - 1)]!!)
+        sb.append("]]")
+        return "$sb"
+    }
+
+    override fun toLineString(): String {
+        val sb = StringBuilder()
+        for (h in 0 until height) {
+            sb.append("[")
+            for (w in 0 until width - 1) {
+                sb.append(values[Cell(h, w)]!!)
+                sb.append(", ")
+            }
+            sb.append(values[Cell(h, width - 1)]!!)
+            sb.append("]\n")
+        }
+        return "$sb"
+    }
+
+    override fun hashCode(): Int {
+        var result = height
+        result = 31 * result + width
+        result = 31 * result + values.hashCode()
+        return result
+    }
 }
 
+fun main() {
+    val m = createMatrix(3, 3, 0)
+    println(m.toString())
+    println(m.toLineString())
+}
