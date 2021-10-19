@@ -253,10 +253,10 @@ fun factorizeToString(n: Int): String {
 fun convert(n: Int, base: Int): List<Int> {
     val result = mutableListOf<Int>()
     var number = n
-    while (number > base) {
+    do {
         result.add(number - (number / base) * base)
         number /= base
-    }
+    } while (number >= base)
     result.add(number)
     return result.reversed()
 }
@@ -343,46 +343,24 @@ fun decimalFromString(str: String, base: Int): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    val units = n % 10
-    val dozens = n / 10 % 10
-    val hundreds = n / 100 % 10
+    val number = listOf(n / 100 % 10, n / 10 % 10, n % 10)
+    val unitsRoman = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    val dozensRoman = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val hundredsRoman = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
     val thousand = n / 1000
     var result = ""
     if (thousand > 0) {
         result += "M".repeat(thousand)
     }
-    if (hundreds in 1..3) {
-        result += "C".repeat(hundreds)
-    } else if (hundreds == 4) {
-        result += "CD"
-    } else if (hundreds == 5) {
-        result += "D"
-    } else if (hundreds in 6..8) {
-        result += "D" + "C".repeat(hundreds - 5)
-    } else if (hundreds == 9) {
-        result += "CM"
-    }
-    if (dozens in 1..3) {
-        result += "X".repeat(dozens)
-    } else if (dozens == 4) {
-        result += "XL"
-    } else if (dozens == 5) {
-        result += "L"
-    } else if (dozens in 6..8) {
-        result += "L" + "X".repeat(dozens - 5)
-    } else if (dozens == 9) {
-        result += "XC"
-    }
-    if (units in 1..3) {
-        result += "I".repeat(units)
-    } else if (units == 4) {
-        result += "IV"
-    } else if (units == 5) {
-        result += "V"
-    } else if (units in 6..8) {
-        result += "V" + "I".repeat(units - 5)
-    } else if (units == 9) {
-        result += "IX"
+    for (i in number.indices) {
+        val currentRoman = when (i) {
+            0 -> hundredsRoman
+            1 -> dozensRoman
+            else -> unitsRoman
+        }
+        if (number[i] > 0) {
+            result += currentRoman[number[i] - 1]
+        }
     }
     return result
 }
