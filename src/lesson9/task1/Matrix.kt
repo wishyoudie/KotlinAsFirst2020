@@ -49,7 +49,8 @@ interface Matrix<E> {
  * height = высота, width = ширина, e = чем заполнить элементы.
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
-fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(height, width, e)
+fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> =
+    if (height <= 0 || width <= 0) throw IllegalArgumentException("") else MatrixImpl(height, width, e)
 
 fun <E> createMatrix(height: Int, width: Int, values: List<List<E>>): Matrix<E> {
     val matrix = createMatrix(height, width, values[0][0])
@@ -73,7 +74,6 @@ class MatrixImpl<E>(
     private val values = mutableMapOf<Cell, E>()
 
     init {
-        if (height < 1 || width < 1) throw IndexOutOfBoundsException("Can't create matrix with such metrics")
         for (h in 0 until height)
             for (w in 0 until width)
                 values[Cell(h, w)] = e
