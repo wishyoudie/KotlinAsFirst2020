@@ -231,7 +231,7 @@ fun top20Words(inputName: String): Map<String, Int> {
     for (line in File(inputName).readLines()) {
         val splitLine = line.split(
             " ", ",", "!", "?", ".", "-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ")", "(", "—",
-            "»", "*", "«", ";", ":", "<", ">", "[", "]", "{", "}", "%", "\""
+            "»", "*", "«", ";", ":", "<", ">", "[", "]", "{", "}", "%", "\"", "/", "+", "=", "_", "~", "\'", "|"
         )
         for (w in splitLine) if (w.isNotEmpty() && w != "\n") words.add(w.lowercase())
     }
