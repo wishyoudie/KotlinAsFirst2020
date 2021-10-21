@@ -4,6 +4,7 @@ package lesson7.task1
 
 import lesson4.task1.CharMulInt
 import lesson4.task1.convert
+import ru.spbstu.wheels.NullableMonad.filter
 import java.io.File
 import kotlin.math.floor
 import kotlin.math.max
@@ -225,7 +226,35 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val words = mutableListOf<String>()
+    for (line in File(inputName).readLines()) {
+        val splitLine = line.split(
+            " ", ",", "!", "?", ".", "-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ")", "(", "—",
+            "»", "*", "«", ";", ":", "<", ">", "[", "]", "{", "}", "%", "\""
+        )
+        for (w in splitLine) if (w.isNotEmpty() && w != "\n") words.add(w.lowercase())
+    }
+
+    var cons = mutableMapOf<String, Int>()
+
+    for (word in words)
+        if (cons[word] == null)
+            cons[word] = 1
+        else
+            cons[word] = cons[word]!! + 1
+    val tmp = cons.toList().sortedByDescending { (k, v) -> v }.toMap()
+    cons = tmp.toMutableMap()
+    //cons.forEach { (k, v) -> println("$k => $v") }
+    return if (tmp.keys.size <= 20)
+        tmp
+    else {
+        val verytmp = cons.toList()[19].second
+        val res = mutableMapOf<String, Int>()
+        for (key in tmp.keys) if (tmp[key]!! >= verytmp) res[key] = tmp[key]!!
+        res
+    }
+}
 
 /**
  * Средняя (14 баллов)
@@ -263,9 +292,37 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    val dict = mutableMapOf<Char, String>()
+    for ((k, v) in dictionary)
+        dict[k.lowercase()[0]] = v.lowercase()
+    val writer = File(outputName).bufferedWriter()
+    for (line in File(inputName).readLines()) {
+        val chars = mutableMapOf<Pair<Char, Int>, Boolean>()
+        // Adding index to make sure every char is unique
+        for (i in line.indices) chars[Pair(line[i], i)] = line[i].isUpperCase()
+        val sb = StringBuilder()
+        for ((ch, index) in chars.keys) {
+            if (ch.lowercase()[0] in dict.keys) {
+                if (chars[(Pair(ch, index))]!!) {
+                    val tmp = dict[ch.lowercase()[0]]
+                    if (tmp!!.isNotEmpty()) {
+                        sb.append(tmp[0].uppercase())
+                        if (tmp.length > 1) sb.append(tmp.substring(1).lowercase())
+                    } else {
+                        sb.append("")
+                    }
+                } else {
+                    sb.append(dict[ch.lowercase()[0]]!!.lowercase())
+                }
+            } else {
+                sb.append(ch)
+            }
+        }
+        writer.write("$sb")
+        writer.newLine()
+    }
+    writer.close()
 }
-
 
 fun checkLetters(str: String): Boolean {
     var letters = setOf<Char>()
@@ -338,7 +395,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
 
 fun countIndent(str: String): Int {
     var res = 0
-    while (str[res++] == ' ') {}
+    while (str[res++] == ' ') {
+    }
     return res - 1
 }
 
@@ -363,11 +421,6 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     TODO()
 }
 
-fun main() {
-    println(countIndent("abc"))
-    println(countIndent(" abc"))
-    println(countIndent("    abc"))
-}
 /**
  * Очень сложная (30 баллов)
  *
