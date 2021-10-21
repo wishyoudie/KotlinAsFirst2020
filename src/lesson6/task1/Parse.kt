@@ -449,7 +449,15 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     fun check(str: String): Boolean {
         val ok = " <>+-[]"
         for (ch in str) if (ch !in ok) return false
-        if (str.count { it == '[' } != str.count { it == ']' }) return false
+        var brackets = 0
+        for (ch in str) {
+            when (ch) {
+                '[' -> brackets++
+                ']' -> brackets--
+            }
+            if (brackets < 0) return false
+        }
+        if (brackets != 0) return false
         return true
     }
 
@@ -552,7 +560,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 }
 
 fun main() {
-    println(computeDeviceCells(1, "<", 500))
-    //println(computeDeviceCells(10, "+>+>+>+>+", 10000))
+    //println(computeDeviceCells(1, "<", 500))
+    println(computeDeviceCells(10, "+>+>+>+>+", 10000))
     //println(listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2))
 }

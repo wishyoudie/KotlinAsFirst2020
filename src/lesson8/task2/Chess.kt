@@ -66,7 +66,7 @@ fun square(notation: String): Square {
  * Ладья может пройти через клетку (3, 3) или через клетку (6, 1) к клетке (6, 3).
  */
 fun rookMoveNumber(start: Square, end: Square): Int {
-    if (!(start.inside() || end.inside())) throw IllegalArgumentException("Bad squares")
+    if (!(start.inside() && end.inside())) throw IllegalArgumentException("Bad squares")
     return if (start == end) 0
     else if (start.column == end.column || start.row == end.row) 1
     else 2

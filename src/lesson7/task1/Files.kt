@@ -2,6 +2,8 @@
 
 package lesson7.task1
 
+import lesson4.task1.CharMulInt
+import lesson4.task1.convert
 import java.io.File
 import kotlin.math.floor
 import kotlin.math.max
@@ -503,7 +505,35 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val sumWidth = ("$lhv" + "$rhv").length
+    writer.write(CharMulInt(' ', "$rhv".length))
+    writer.write("$lhv\n")
+    writer.write("*")
+    writer.write(CharMulInt(' ', "$lhv".length - 1))
+    writer.write("$rhv\n")
+    writer.write(CharMulInt('-', sumWidth))
+    writer.newLine()
+    val rhvdigits = convert(rhv, 10)
+    var i = rhvdigits.size - 1
+    var curNum = lhv * rhvdigits[i]
+    writer.write(CharMulInt(' ', sumWidth - "$curNum".length))
+    writer.write("$curNum\n")
+    i--
+    while (i != -1) {
+        writer.write("+")
+        curNum = lhv * rhvdigits[i]
+        writer.write(CharMulInt(' ', sumWidth + i - rhvdigits.size - "$curNum".length))
+        writer.write("$curNum")
+        writer.newLine()
+        i--
+    }
+    writer.write(CharMulInt('-', sumWidth))
+    writer.newLine()
+    val res = rhv * lhv
+    writer.write(CharMulInt(' ', sumWidth - "$res".length))
+    writer.write("$res")
+    writer.close()
 }
 
 
