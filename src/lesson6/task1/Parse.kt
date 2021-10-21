@@ -260,6 +260,14 @@ fun safeToInt(s: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
+    try {
+        val c = mutableListOf<Int>()
+        c.add(safeToInt(expression[0].toString()))
+        c.add(safeToInt(expression.last().toString()))
+        c.clear()
+    } catch (e: IllegalArgumentException) {
+        throw e
+    }
     val parts = expression.split(" ")
     var op = "+"
     var res = 0
@@ -557,10 +565,4 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     executeCommands(commands, min(limit, commands.length), res)
 
     return res
-}
-
-fun main() {
-    //println(computeDeviceCells(1, "<", 500))
-    println(computeDeviceCells(10, "+>+>+>+>+", 10000))
-    //println(listOf(0, 6, 5, 4, 3, 2, 1, 0, -1, -1, -2))
 }

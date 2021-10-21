@@ -319,10 +319,6 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
 
 /**
  * Сложная (22 балла)
- *
- * Реализовать транслитерацию текста в заданном формате разметки в формат разметки HTML.
- *
- * Во входном файле с именем inputName содержится текст, содержащий в себе элементы текстовой разметки следующих типов:
  * - *текст в курсивном начертании* -- курсив
  * - **текст в полужирном начертании** -- полужирный
  * - ~~зачёркнутый текст~~ -- зачёркивание
@@ -334,33 +330,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
  *
  * Кроме того, все абзацы исходного текста, отделённые друг от друга пустыми строками, следует обернуть в теги <p>...</p>,
  * а весь текст целиком в теги <html><body>...</body></html>.
- *
- * Все остальные части исходного текста должны остаться неизменными с точностью до наборов пробелов и переносов строк.
  * Отдельно следует заметить, что открывающая последовательность из трёх звёздочек (***) должна трактоваться как "<b><i>"
- * и никак иначе.
- *
- * При решении этой и двух следующих задач полезно прочитать статью Википедии "Стек".
- *
- * Пример входного файла:
-Lorem ipsum *dolor sit amet*, consectetur **adipiscing** elit.
-Vestibulum lobortis, ~~Est vehicula rutrum *suscipit*~~, ipsum ~~lib~~ero *placerat **tortor***,
-
-Suspendisse ~~et elit in enim tempus iaculis~~.
- *
- * Соответствующий выходной файл:
-<html>
-<body>
-<p>
-Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
-Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
-</p>
-<p>
-Suspendisse <s>et elit in enim tempus iaculis</s>.
-</p>
-</body>
-</html>
- *
- * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     TODO()
@@ -390,7 +360,6 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     writer.write("</body>\n")
     writer.write("</html>")
     writer.close()*/
-    TODO()
 }
 
 fun main() {
@@ -439,10 +408,10 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     val res = rhv * lhv
     val sumWidth = ("$res").length + 1
-    writer.write(CharMulInt(' ', "$rhv".length))
+    writer.write(CharMulInt(' ', sumWidth - "$lhv".length))
     writer.write("$lhv\n")
     writer.write("*")
-    writer.write(CharMulInt(' ', "$lhv".length - 1))
+    writer.write(CharMulInt(' ', sumWidth - 1 - "$rhv".length))
     writer.write("$rhv\n")
     writer.write(CharMulInt('-', sumWidth))
     writer.newLine()
