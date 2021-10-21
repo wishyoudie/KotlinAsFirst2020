@@ -513,10 +513,15 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     fun executeCommands(cmds: String, finish: Int, res: MutableList<Int>): List<Int> {
         var currentCommand = 0
         while (currentCommand < finish && commandsLeft > 0) {
-            if (currentCell !in 0 until cells) throw IllegalStateException("")
             when (cmds[currentCommand]) {
-                '>' -> currentCell++
-                '<' -> currentCell--
+                '>' -> {
+                    currentCell++
+                    if (currentCell >= cells) throw IllegalStateException("")
+                }
+                '<' -> {
+                    currentCell--
+                    if (currentCell < 0) throw IllegalStateException("")
+                }
                 '+' -> res[currentCell]++
                 '-' -> res[currentCell]--
                 '[' -> {
@@ -537,7 +542,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             currentCommand++
             //print("$commandsLeft / $limit    $res\n")
         }
-        if (currentCell !in 0 until cells) throw IllegalStateException("")
 
         return res
     }
