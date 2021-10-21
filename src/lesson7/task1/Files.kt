@@ -376,19 +376,21 @@ fun countIndent(str: String): Int {
  * Сложная (23 балла)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
+    /*val writer = File(outputName).bufferedWriter()
     val input = File(inputName).readLines()
     var currentIndent = 0
     writer.write("<html>\n")
     writer.write("<body>\n")
     writer.write("<p>\n")
     for (li in input) {
+        val thisIndent = countIndent(li)
 
     }
     writer.write("</p>\n")
     writer.write("</body>\n")
     writer.write("</html>")
-    writer.close()
+    writer.close()*/
+    TODO()
 }
 
 fun main() {
