@@ -366,107 +366,36 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     TODO()
 }
 
-/**
- * Сложная (23 балла)
- *
- * Реализовать транслитерацию текста в заданном формате разметки в формат разметки HTML.
- *
- * Во входном файле с именем inputName содержится текст, содержащий в себе набор вложенных друг в друга списков.
- * Списки бывают двух типов: нумерованные и ненумерованные.
- *
- * Каждый элемент ненумерованного списка начинается с новой строки и символа '*', каждый элемент нумерованного списка --
- * с новой строки, числа и точки. Каждый элемент вложенного списка начинается с отступа из пробелов, на 4 пробела большего,
- * чем список-родитель. Максимально глубина вложенности списков может достигать 6. "Верхние" списки файла начинются
- * прямо с начала строки.
- *
- * Следует вывести этот же текст в выходной файл в формате HTML:
- * Нумерованный список:
- * <ol>
- *     <li>Раз</li>
- *     <li>Два</li>
- *     <li>Три</li>
- * </ol>
- *
- * Ненумерованный список:
- * <ul>
- *     <li>Раз</li>
- *     <li>Два</li>
- *     <li>Три</li>
- * </ul>
- *
- * Кроме того, весь текст целиком следует обернуть в теги <html><body><p>...</p></body></html>
- *
- * Все остальные части исходного текста должны остаться неизменными с точностью до наборов пробелов и переносов строк.
- *
- * Пример входного файла:
-///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
- * Утка по-пекински
- * Утка
- * Соус
- * Салат Оливье
-1. Мясо
- * Или колбаса
-2. Майонез
-3. Картофель
-4. Что-то там ещё
- * Помидоры
- * Фрукты
-1. Бананы
-23. Яблоки
-1. Красные
-2. Зелёные
-///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
- *
- *
- * Соответствующий выходной файл:
-///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
-<html>
-<body>
-<p>
-<ul>
-<li>
-Утка по-пекински
-<ul>
-<li>Утка</li>
-<li>Соус</li>
-</ul>
-</li>
-<li>
-Салат Оливье
-<ol>
-<li>Мясо
-<ul>
-<li>Или колбаса</li>
-</ul>
-</li>
-<li>Майонез</li>
-<li>Картофель</li>
-<li>Что-то там ещё</li>
-</ol>
-</li>
-<li>Помидоры</li>
-<li>Фрукты
-<ol>
-<li>Бананы</li>
-<li>Яблоки
-<ol>
-<li>Красные</li>
-<li>Зелёные</li>
-</ol>
-</li>
-</ol>
-</li>
-</ul>
-</p>
-</body>
-</html>
-///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
- * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
- */
-fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+fun countIndent(str: String): Int {
+    var res = 0
+    while (str[res++] == ' ') {}
+    return res - 1
 }
 
+/**
+ * Сложная (23 балла)
+ */
+fun markdownToHtmlLists(inputName: String, outputName: String) {
+    val writer = File(outputName).bufferedWriter()
+    val input = File(inputName).readLines()
+    var currentIndent = 0
+    writer.write("<html>\n")
+    writer.write("<body>\n")
+    writer.write("<p>\n")
+    for (li in input) {
+
+    }
+    writer.write("</p>\n")
+    writer.write("</body>\n")
+    writer.write("</html>")
+    writer.close()
+}
+
+fun main() {
+    println(countIndent("abc"))
+    println(countIndent(" abc"))
+    println(countIndent("    abc"))
+}
 /**
  * Очень сложная (30 баллов)
  *
@@ -506,7 +435,8 @@ fun markdownToHtml(inputName: String, outputName: String) {
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
-    val sumWidth = ("$lhv" + "$rhv").length
+    val res = rhv * lhv
+    val sumWidth = ("$res").length + 1
     writer.write(CharMulInt(' ', "$rhv".length))
     writer.write("$lhv\n")
     writer.write("*")
@@ -530,8 +460,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     }
     writer.write(CharMulInt('-', sumWidth))
     writer.newLine()
-    val res = rhv * lhv
-    writer.write(CharMulInt(' ', sumWidth - "$res".length))
+    writer.write(" ")
     writer.write("$res")
     writer.close()
 }
@@ -559,9 +488,4 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     TODO()
-}
-
-fun main() {
-    println(checkLetters("a"))
-    println(checkLetters("aa"))
 }
