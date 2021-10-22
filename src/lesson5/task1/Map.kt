@@ -98,15 +98,12 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  */
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
     val resultMap = mutableMapOf<Int, List<String>>()
-    for (i in 5 downTo 2) {
-        val nameList = mutableListOf<String>()
-        for ((name, mark) in grades) {
-            if (mark == i) {
-                nameList.add(name)
-            }
-        }
-        if (nameList.isNotEmpty()) {
-            resultMap[i] = nameList.reversed()
+
+    for ((name, mark) in grades) {
+        if (mark !in resultMap) {
+            resultMap += Pair(mark, listOf(name))
+        } else {
+            resultMap += Pair(mark, resultMap[mark]!! + listOf(name))
         }
     }
     return resultMap
@@ -202,7 +199,7 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     }
     val result: MutableMap<String, String> = (mapA + mapB).toMutableMap()
     for (i in matches.indices) {
-        result += Pair(matches[i], listOf(mapA[matches[i]], mapB[matches[i]]).joinToString())
+        result[matches[i]] = mapA[matches[i]] + ", " + mapB[matches[i]]
     }
     return result
 }
@@ -222,19 +219,19 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
     val countMap = mutableMapOf<String, Int>()
     val result = mutableMapOf<String, Double>()
     for ((first, second) in stockPrices) {
-        sumMap += if (first !in sumMap) {
-            Pair(first, second)
+        sumMap[first] = if (first !in sumMap) {
+            second
         } else {
-            Pair(first, second + sumMap[first]!!)
+            second + sumMap[first]!!
         }
-        countMap += if (first !in countMap) {
-            Pair(first, 1)
+        countMap[first] = if (first !in countMap) {
+            1
         } else {
-            Pair(first, countMap[first]!! + 1)
+            countMap[first]!! + 1
         }
     }
     for ((first, second) in sumMap) {
-        result += Pair(first, second / (countMap[first]!!.toDouble()))
+        result[first] = second / (countMap[first]!!.toDouble())
     }
     return result
 }
@@ -255,25 +252,22 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    val kindMap = mutableMapOf<String, Double>()
-    val costList = mutableListOf<Double>()
     var result = ""
+    var minValue = Double.MAX_VALUE
     for ((first, second) in stuff) {
         if (second.first == kind) {
-            kindMap += Pair(first, second.second)
-            costList.add(second.second)
-        }
-    }
-    return if (costList.isEmpty()) {
-        null
-    } else {
-        for ((first, second) in kindMap) {
-            if (second == costList.minOrNull()) {
+            if (second.second < minValue) {
+                minValue = second.second
                 result = first
             }
         }
-        result
     }
+    if (minValue == Double.MAX_VALUE) {
+        return null
+    } else {
+        return result
+    }
+
 }
 
 /**
@@ -286,15 +280,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    val wordChars = mutableListOf<Char>()
-    val wordList = word.toList()
-    for (i in wordList.indices) {
-        if (wordList[i] !in wordChars) {
-            wordChars.add(wordList[i])
-        }
-    }
-    for (i in wordChars.indices) {
-        if (wordChars[i] !in chars) {
+    for (element in word) {
+        if (element !in chars) {
             return false
         }
     }
@@ -315,11 +302,21 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  */
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
-    for (i in list.indices) {
-        val repeatsNumber = list.count { it == list[i] }
-        if (list[i] !in result.keys && repeatsNumber > 1) {
-            result += Pair(list[i], repeatsNumber)
+    for (element in list) {
+        if (element !in result) {
+            result[element] = 1
+        } else {
+            result[element] = result[element]!! + 1
         }
+    }
+    val valuesToDelete = mutableListOf<String>() // не придумал как сделать без этого
+    for (key in result.keys) {
+        if (result[key] == 1) {
+            valuesToDelete.add(key)
+        }
+    }
+    for (element in valuesToDelete) {
+        result.remove(element)
     }
     return result
 }
@@ -340,12 +337,13 @@ fun hasAnagrams(words: List<String>): Boolean {
     for (i in words.indices) {
         for (j in (i + 1) until words.size) {
             if (words[i].length == words[j].length) {
-                val firstWord = words[i].toList()
-                val secondWord = words[j].toList()
+                val firstWord = words[i]
+                val secondWord = words[j]
                 var flag = 1
                 for (f in firstWord.indices) {
                     if (firstWord[f] !in secondWord) {
                         flag = 0
+                        break
                     }
                 }
                 if (flag == 1) {
@@ -393,19 +391,17 @@ fun hasAnagrams(words: List<String>): Boolean {
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, Set<String>>()
-    val allNames = mutableListOf<String>()
+    val allNames = mutableSetOf<String>()
     for ((first, second) in friends) { // добавляю все возможные имена в список allNames
-        if (first !in allNames) {
-            allNames.add(first)
-        }
-        for (j in second.indices) {
-            if (second.toList()[j] !in allNames) {
-                allNames.add(second.toList()[j])
+        allNames.add(first)
+        for (element in second) {
+            if (element !in allNames) {
+                allNames.add(element)
             }
         }
     }
-    for (i in allNames.indices) { // добавляю имена и друзей из списка allNames, опираясь на изначальный ассоциативный список
-        result += Pair(allNames[i], (friends[allNames[i]] ?: setOf()))
+    for (element in allNames) { // добавляю имена и друзей из списка allNames, опираясь на изначальный ассоциативный список
+        result[element] = friends[element] ?: setOf()
     }
     do { // расширяю список по рукопожатиям
         val oldResult = result
