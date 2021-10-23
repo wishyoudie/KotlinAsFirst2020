@@ -289,9 +289,6 @@ fun plusMinus(expression: String): Int {
     return res
 }
 
-fun main() {
-    println(plusMinus(""))
-}
 /**
  * Сложная (6 баллов)
  *
@@ -529,18 +526,15 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (!check(commands)) throw IllegalArgumentException("")
     val res = mutableListOf<Int>()
     for (i in 0 until cells) res.add(0)
-
     fun executeCommands(cmds: String, finish: Int, res: MutableList<Int>): List<Int> {
         var currentCommand = 0
         while (currentCommand < finish && commandsLeft > 0) {
             when (cmds[currentCommand]) {
                 '>' -> {
-                    currentCell++
-                    if (currentCell >= cells) throw IllegalStateException("")
+                    if (currentCell + 1 <= cells) currentCell++ else throw IllegalStateException("")
                 }
                 '<' -> {
-                    currentCell--
-                    if (currentCell < 0) throw IllegalStateException("")
+                    if (currentCell - 1 >= 0) currentCell-- else throw IllegalStateException("")
                 }
                 '+' -> res[currentCell]++
                 '-' -> res[currentCell]--
@@ -556,7 +550,8 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                         currentCommand -= (reversedNestedLoop.length + 1)
                     }
                 }
-                else -> {}
+                else -> {
+                }
             }
             commandsLeft--
             currentCommand++
@@ -566,7 +561,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         return res
     }
 
-    executeCommands(commands, min(limit, commands.length), res)
+    executeCommands(commands, commands.length, res)
 
     return res
 }
