@@ -4,6 +4,7 @@ package lesson6.task1
 
 import lesson2.task2.daysInMonth
 import kotlin.NumberFormatException
+import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
@@ -260,31 +261,23 @@ fun safeToInt(s: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    if (expression.isEmpty()) throw IllegalArgumentException("Bad operation")
-    try {
-        val c = mutableListOf<Int>()
-        c.add(safeToInt(expression[0].toString()))
-        c.add(safeToInt(expression.last().toString()))
-        c.clear()
-    } catch (e: IllegalArgumentException) {
-        throw e
+    if (expression.isEmpty()) throw IllegalArgumentException("Empty expression")
+    val ok = "0123456789 "
+    val ops = "+-"
+    for (check in expression) if (check !in (ok + ops)) throw IllegalArgumentException("$check is not allowed in expression")
+    if (" " !in expression) return safeToInt(expression)
+    val commands = expression.split(" ")
+    for (i in commands.indices) {
+        if ((i % 2 == 0 && commands[i] in ops) || (i % 2 != 0 && commands[i] !in ops)) throw IllegalArgumentException("Bad expression format")
     }
-    val parts = expression.split(" ")
-    var op = "+"
-    var res = 0
-    for (i in parts.indices) {
-        if (i % 2 == 0) {
-            try {
-                val x = safeToInt(parts[i])
-                when (op) {
-                    "+" -> res += x
-                    "-" -> res -= x
-                    else -> throw IllegalArgumentException("Bad operation")
-                }
-            } catch (e: IllegalArgumentException) {
-                throw e
-            }
-        } else op = parts[i]
+    var res = commands[0].toInt()
+    for (i in 1..(commands.size - 2) step 2) {
+        val x = commands[i + 1].toInt()
+        if (x <= 0) throw IllegalArgumentException("Non-positive numbers not allowed")
+        when (commands[i]) {
+            "+" -> res += x
+            "-" -> res -= x
+        }
     }
     return res
 }
