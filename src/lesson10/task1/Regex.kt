@@ -36,7 +36,7 @@ fun parseExpr(inputName: String, values: List<Int>): Map<Int, Int> {
 }
 
 fun String.parseExpr(): Expression {
-    val pattern = Pattern.compile("""x|\+|-|\*|/|\(|\)|\d+| +?|.+?""")
+    val pattern = Pattern.compile("""x|\^|\+|-|\*|/|\(|\)|\d+| +?|.+?""")
     val matcher = pattern.matcher(this)
     val groups = mutableListOf<String>()
     while (matcher.find()) {
@@ -82,7 +82,21 @@ sealed class Expression {
                 left.calculate(x) / right.calculate(x)
             }
             POW -> {
-                TODO()
+                val p = right.calculate(x)
+                when {
+                    p == 0 -> 1
+                    p < 0 -> throw IllegalArgumentException("Negative power not supported yet")
+                    else -> {
+                        val st = left.calculate(x)
+                        var ex = st
+                        var i = 1
+                        while (i < p) {
+                            ex *= st
+                            i++
+                        }
+                        ex
+                    }
+                }
             }
         }
         is Negate -> -arg.calculate(x)
@@ -114,12 +128,12 @@ class Parser(private val groups: List<String>) {
     }
 
     private fun parseItem(): Expression {
-        var left = parseFactor()
+        var left = parseExponentiation()
         while (pos < groups.size) {
             when (val op = operationMap[groups[pos]]) {
                 TIMES, DIV -> {
                     pos++
-                    val right = parseFactor()
+                    val right = parseExponentiation()
                     left = Expression.Binary(left, op, right)
                 }
                 else -> return left
@@ -132,7 +146,7 @@ class Parser(private val groups: List<String>) {
         check(pos < groups.size) { "Unexpected expression end" }
         return when (val group = groups[pos++]) {
             "x" -> Expression.Variable
-            "-" -> Expression.Negate(parseFactor())
+            "-" -> Expression.Negate(parseExponentiation())
             "(" -> {
                 val arg = parseExpression()
                 val next = groups[pos++]
@@ -152,7 +166,18 @@ class Parser(private val groups: List<String>) {
      * предыдущих функциях парсера, и поддержать операцию POW внутри функции calculate.
      */
     internal fun parseExponentiation(): Expression {
-        TODO()
+        var left = parseFactor()
+        while (pos < groups.size) {
+            when (val op = operationMap[groups[pos]]) {
+                POW -> {
+                    pos++
+                    val right = parseFactor()
+                    left = Expression.Binary(left, op, right)
+                }
+                else -> return left
+            }
+        }
+        return left
     }
 
     private val operationMap = mapOf("+" to PLUS, "-" to MINUS, "*" to TIMES, "/" to DIV, "^" to POW)
