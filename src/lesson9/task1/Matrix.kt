@@ -35,11 +35,6 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
-
-    /**
-     * Привести к строке табличного вида: для дебаггинга
-     */
-    //fun toLineString(): String
 }
 
 /**
@@ -122,20 +117,7 @@ class MatrixImpl<E>(
         sb.append("]]")
         return "$sb"
     }
-    /*
-    override fun toLineString(): String {
-        val sb = StringBuilder()
-        for (h in 0 until height) {
-            sb.append("[")
-            for (w in 0 until width - 1) {
-                sb.append(values[Cell(h, w)]!!)
-                sb.append(", ")
-            }
-            sb.append(values[Cell(h, width - 1)]!!)
-            sb.append("]\n")
-        }
-        return "$sb"
-    }*/
+
 
     override fun hashCode(): Int {
         var result = height
@@ -143,4 +125,10 @@ class MatrixImpl<E>(
         result = 31 * result + values.hashCode()
         return result
     }
+}
+
+
+fun main() {
+    val mx = createMatrix(3, 3, 1)
+    mx[Cell(1, 1)] = 2
 }

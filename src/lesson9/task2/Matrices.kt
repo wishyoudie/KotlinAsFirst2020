@@ -2,6 +2,7 @@
 
 package lesson9.task2
 
+import lesson9.task1.Cell
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
 import ru.spbstu.wheels.defaultCompareTo
@@ -10,6 +11,20 @@ import kotlin.math.min
 import kotlin.math.max
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
+
+fun Matrix<Int>.toLineString(): String {
+    val sb = StringBuilder()
+    for (h in 0 until height) {
+        sb.append("[")
+        for (w in 0 until width - 1) {
+            sb.append(this[h, w])
+            sb.append(", ")
+        }
+        sb.append(this[h, width - 1])
+        sb.append("]\n")
+    }
+    return "$sb"
+}
 
 /**
  * Пример
@@ -448,6 +463,25 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
     return Triple(false, -1, -1)
 }
 
+fun Matrix<Int>.find(key: Int): Pair<Int, Int> {
+    for (h in 0 until this.height)
+        for (w in 0 until this.width)
+            if (this[h, w] == key) return Pair(h, w)
+    throw IllegalStateException("No such value")
+}
+
+fun Matrix<Int>.swap(a: Int, b: Int) {
+    val acoords = this.find(a)
+    val bcoords = this.find(b)
+    if (!((bcoords.first == acoords.first + 1 && bcoords.second == acoords.second) ||
+                (bcoords.first == acoords.first && bcoords.second == acoords.second - 1) ||
+                (bcoords.first == acoords.first && bcoords.second == acoords.second + 1) ||
+                (bcoords.first == acoords.first - 1 && bcoords.second == acoords.second))
+    ) throw IllegalStateException("$b move is not allowed")
+    this[bcoords.first, bcoords.second] = a
+    this[acoords.first, acoords.second] = b
+}
+
 /**
  * Сложная (8 баллов)
  *
@@ -475,7 +509,12 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
  * 0  4 13  6
  * 3 10 11  8
  */
-fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> = TODO()
+fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
+    val res = matrix
+    for (move in moves)
+        res.swap(move, 0)
+    return res
+}
 
 /**
  * Очень сложная (32 балла)
