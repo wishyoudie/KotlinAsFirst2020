@@ -531,7 +531,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         while (currentCommand < finish && commandsLeft > 0) {
             when (cmds[currentCommand]) {
                 '>' -> {
-                    if (currentCell + 1 <= cells) currentCell++ else throw IllegalStateException("")
+                    if (currentCell + 1 < cells) currentCell++ else throw IllegalStateException("")
                 }
                 '<' -> {
                     if (currentCell - 1 >= 0) currentCell-- else throw IllegalStateException("")
