@@ -10,6 +10,7 @@ import ru.spbstu.wheels.NullableMonad.filter
 import java.io.File
 import kotlin.math.floor
 import kotlin.math.max
+import java.util.ArrayDeque
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -457,55 +458,84 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         if (paragraph.isEmpty()) continue
         sb.append("<p>")
         for (line in paragraph) {
-            var flagItalic = false
-            var flagBold = false
-            var flagCrossed = false
-            var flagBoth = false
+            val stack = ArrayDeque<String>()
             var i = 0
             while (i < line.length && line[i] != '\n') {
                 if (line[i] == '~' && line[i + 1] == '~') {
-                    sb.append(if (flagCrossed) "</s>" else "<s>")
-                    flagCrossed = !flagCrossed
+                    if (stack.isNotEmpty()) {
+                        if (stack.first == "~~") {
+                            stack.pop()
+                            sb.append("</s>")
+                        } else {
+                            stack.push("~~")
+                            sb.append("<s>")
+                        }
+                    } else {
+                        stack.push("~~")
+                        sb.append("<s>")
+                    }
                     i += 2
                 } else if (line[i] == '*') {
                     if (i < line.length - 1 && line[i + 1] == '*') {
                         if (i < line.length - 2 && line[i + 2] == '*') {
-                            if (!flagBold) {
-                                if (!flagItalic) {
-                                    sb.append("<b><i>")
-                                    flagBoth = true
-                                } else
-                                    sb.append("</i><b>")
-                            } else {
-                                if (!flagItalic)
-                                    sb.append("</b><i>")
-                                else {
-                                    if (flagBoth) {
-                                        sb.append("</i></b>")
-                                        flagBoth = false
-                                    } else
-                                        sb.append("</b></i>")
-                                }
-                            }
-                            flagItalic = !flagItalic
-                            flagBold = !flagBold
                             i += 3
+                            if (stack.isNotEmpty()) {
+                                when (stack.first) {
+                                    "*" -> {
+                                        stack.pop()
+                                        stack.pop()
+                                        sb.append("</i></b>")
+                                    }
+                                    "**" -> {
+                                        stack.pop()
+                                        stack.pop()
+                                        sb.append("</b></i>")
+                                    }
+                                    else -> {
+                                        stack.push("***")
+                                        sb.append("<b><i>")
+                                    }
+                                }
+                            } else {
+                                stack.push("**")
+                                stack.push("*")
+                                sb.append("<b><i>")
+                            }
                         } else {
-                            sb.append(if (flagBold) "</b>" else "<b>")
-                            flagBold = !flagBold
                             i += 2
+                            if (stack.isNotEmpty()) {
+                                if (stack.first == "**") {
+                                    stack.pop()
+                                    sb.append("</b>")
+                                } else {
+                                    stack.push("**")
+                                    sb.append("<b>")
+                                }
+                            } else {
+                                stack.push("**")
+                                sb.append("<b>")
+                            }
                         }
                     } else {
-                        sb.append(if (flagItalic) "</i>" else "<i>")
-                        flagItalic = !flagItalic
                         i++
+                        if (stack.isNotEmpty()) {
+                            if (stack.first == "*") {
+                                stack.pop()
+                                sb.append("</i>")
+                            } else {
+                                stack.push("*")
+                                sb.append("<i>")
+                            }
+                        } else {
+                            stack.push("*")
+                            sb.append("<i>")
+                        }
                     }
                 } else {
                     sb.append(line[i])
                     i++
                 }
             }
-            sb.append("\n")
         }
         sb.append("</p>")
     }
@@ -622,3 +652,70 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     TODO()
 }
+
+/*
+val lines = File(inputName).readLines()
+    val paragraphs = splitToParagraphs(lines)
+    val sb = StringBuilder()
+    sb.append("<html><body>")
+    for (paragraph in paragraphs) {
+        if (paragraph.isEmpty()) continue
+        sb.append("<p>")
+        for (line in paragraph) {
+            var flagItalic = false
+            var flagBold = false
+            var flagCrossed = false
+            var flagBoth = false
+            var i = 0
+            while (i < line.length && line[i] != '\n') {
+                if (line[i] == '~' && line[i + 1] == '~') {
+                    sb.append(if (flagCrossed) "</s>" else "<s>")
+                    flagCrossed = !flagCrossed
+                    i += 2
+                } else if (line[i] == '*') {
+                    if (i < line.length - 1 && line[i + 1] == '*') {
+                        if (i < line.length - 2 && line[i + 2] == '*') {
+                            if (!flagBold) {
+                                if (!flagItalic) {
+                                    sb.append("<b><i>")
+                                    flagBoth = true
+                                } else
+                                    sb.append("</i><b>")
+                            } else {
+                                if (!flagItalic)
+                                    sb.append("</b><i>")
+                                else {
+                                    if (flagBoth) {
+                                        sb.append("</i></b>")
+                                        flagBoth = false
+                                    } else
+                                        sb.append("</b></i>")
+                                }
+                            }
+                            flagItalic = !flagItalic
+                            flagBold = !flagBold
+                            i += 3
+                        } else {
+                            sb.append(if (flagBold) "</b>" else "<b>")
+                            flagBold = !flagBold
+                            i += 2
+                        }
+                    } else {
+                        sb.append(if (flagItalic) "</i>" else "<i>")
+                        flagItalic = !flagItalic
+                        i++
+                    }
+                } else {
+                    sb.append(line[i])
+                    i++
+                }
+            }
+            sb.append("\n")
+        }
+        sb.append("</p>")
+    }
+    sb.append("</body></html>")
+    val writer = File(outputName).bufferedWriter()
+    writer.write("$sb")
+    writer.close()
+ */
