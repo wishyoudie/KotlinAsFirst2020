@@ -454,6 +454,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val sb = StringBuilder()
     sb.append("<html><body>")
     for (paragraph in paragraphs) {
+        if (paragraph.isEmpty()) continue
         sb.append("<p>")
         for (line in paragraph) {
             var flagItalic = false
