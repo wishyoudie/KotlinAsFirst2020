@@ -460,7 +460,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         for (line in paragraph) {
             val stack = ArrayDeque<String>()
             var i = 0
-            while (i < line.length && line[i] != '\n') {
+            while (i < line.length) {
                 if (line[i] == '~' && line[i + 1] == '~') {
                     if (stack.isNotEmpty()) {
                         if (stack.first == "~~") {
