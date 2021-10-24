@@ -477,9 +477,17 @@ fun Matrix<Int>.swap(a: Int, b: Int) {
                 (bcoords.first == acoords.first && bcoords.second == acoords.second - 1) ||
                 (bcoords.first == acoords.first && bcoords.second == acoords.second + 1) ||
                 (bcoords.first == acoords.first - 1 && bcoords.second == acoords.second))
-    ) throw IllegalStateException("$b move is not allowed")
+    ) throw IllegalStateException("$a move is not allowed")
     this[bcoords.first, bcoords.second] = a
     this[acoords.first, acoords.second] = b
+}
+
+fun Matrix<Int>.toList(): MutableList<Int> {
+    val res = mutableListOf<Int>()
+    for (h in 0 until this.height)
+        for (w in 0 until this.width)
+            res.add(this[h, w])
+    return res
 }
 
 /**
@@ -555,4 +563,53 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
  *
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
-fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> = TODO()
+fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
+    if (matrix.width != 4 || matrix.height != 4) throw IllegalArgumentException("Not 4x4 matrix")
+
+    // Step 1: decide which solution is needed
+
+    val f = matrix.toList()
+    val zeroCoords = matrix.find(0)
+    var N = zeroCoords.first
+    for (i in 1..15) {
+        var k = 0
+        for (j in matrix.find(i).first * 4 + matrix.find(i).second until 16)
+            if (f[j] < i)
+                k++
+        N += k
+    }
+    val solutions = mapOf(
+        "even" to createMatrix(
+            4, 4, listOf(
+                listOf(1, 2, 3, 4),
+                listOf(5, 6, 7, 8),
+                listOf(9, 10, 11, 12),
+                listOf(13, 14, 15, 0)
+            )
+        ),
+        "odd" to createMatrix(
+            4, 4, listOf(
+                listOf(1, 2, 3, 4),
+                listOf(5, 6, 7, 8),
+                listOf(9, 10, 11, 12),
+                listOf(13, 15, 14, 0)
+            )
+        )
+    )
+
+    val sol = solutions[if (N % 2 == 0) "even" else "odd"]
+
+    // Step 2: check if already solved
+    if (matrix == sol) return listOf()
+
+    // Step 3: solve first row
+    val res = mutableListOf<Int>()
+
+
+
+    return res
+}
+
+fun main() {
+
+}

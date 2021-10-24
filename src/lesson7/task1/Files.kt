@@ -2,6 +2,8 @@
 
 package lesson7.task1
 
+import kotlinx.html.*
+import kotlinx.html.stream.appendHTML
 import lesson4.task1.CharMulInt
 import lesson4.task1.convert
 import ru.spbstu.wheels.NullableMonad.filter
@@ -127,7 +129,50 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    fun correct(word: String): String {
+        for (ex in listOf("жури", "брошур", "парашут"))
+            if (word.lowercase().substring(word.indices) in ex) return word
+        val inds = mutableListOf<Int>()
+        val sb = StringBuilder()
+        for (sibilant in "жчшщ") {
+            if (sibilant !in word.lowercase())
+                continue
+            for (i in word.indices)
+                if (word.lowercase()[i] == sibilant && i != word.lastIndex) inds.add(i + 1)
+        }
+        if (inds.isEmpty()) return word
+        var prev = 0
+        for (index in inds.sorted()) {
+            sb.append(word.substring(prev until index))
+            sb.append(
+                when (word[index]) {
+                    'Ы' -> 'И'
+                    'Я' -> 'А'
+                    'Ю' -> 'У'
+                    'ы' -> 'и'
+                    'я' -> 'а'
+                    'ю' -> 'у'
+                    else -> word[index]
+                }
+            )
+            prev = index + 1
+        }
+        sb.append(word.substring(prev until word.length))
+        return "$sb"
+    }
+
+
+    val writer = File(outputName).bufferedWriter()
+    for (line in File(inputName).readLines()) {
+        val sb = StringBuilder()
+        val words = line.split(" ")
+        for (i in 0 until words.size - 1)
+            sb.append(correct(words[i]) + " ")
+        sb.append(correct(words.last()))
+        writer.write("$sb")
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -390,7 +435,83 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
  * Отдельно следует заметить, что открывающая последовательность из трёх звёздочек (***) должна трактоваться как "<b><i>"
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    fun splitToParagraphs(lines: List<String>): MutableList<MutableList<String>> {
+        val paragraphs = mutableListOf(mutableListOf<String>())
+        var i = 0
+        for (line in lines) {
+            if (line.isNotEmpty())
+                paragraphs[i].add(line)
+            else {
+                paragraphs.add(mutableListOf())
+                i++
+            }
+        }
+        return paragraphs
+    }
+
+    val lines = File(inputName).readLines()
+    val paragraphs = splitToParagraphs(lines)
+    val sb = StringBuilder()
+    sb.append("<html><body>")
+    for (paragraph in paragraphs) {
+        sb.append("<p>")
+        for (line in paragraph) {
+            var flagItalic = false
+            var flagBold = false
+            var flagCrossed = false
+            var flagBoth = false
+            var i = 0
+            while (i < line.length && line[i] != '\n') {
+                if (line[i] == '~' && line[i + 1] == '~') {
+                    sb.append(if (flagCrossed) "</s>" else "<s>")
+                    flagCrossed = !flagCrossed
+                    i += 2
+                } else if (line[i] == '*') {
+                    if (i < line.length - 1 && line[i + 1] == '*') {
+                        if (i < line.length - 2 && line[i + 2] == '*') {
+                            if (!flagBold) {
+                                if (!flagItalic) {
+                                    sb.append("<b><i>")
+                                    flagBoth = true
+                                } else
+                                    sb.append("</i><b>")
+                            } else {
+                                if (!flagItalic)
+                                    sb.append("</b><i>")
+                                else {
+                                    if (flagBoth) {
+                                        sb.append("</i></b>")
+                                        flagBoth = false
+                                    } else
+                                        sb.append("</b></i>")
+                                }
+                            }
+                            flagItalic = !flagItalic
+                            flagBold = !flagBold
+                            i += 3
+                        } else {
+                            sb.append(if (flagBold) "</b>" else "<b>")
+                            flagBold = !flagBold
+                            i += 2
+                        }
+                    } else {
+                        sb.append(if (flagItalic) "</i>" else "<i>")
+                        flagItalic = !flagItalic
+                        i++
+                    }
+                } else {
+                    sb.append(line[i])
+                    i++
+                }
+            }
+            sb.append("\n")
+        }
+        sb.append("</p>")
+    }
+    sb.append("</body></html>")
+    val writer = File(outputName).bufferedWriter()
+    writer.write("$sb")
+    writer.close()
 }
 
 fun countIndent(str: String): Int {
@@ -404,20 +525,6 @@ fun countIndent(str: String): Int {
  * Сложная (23 балла)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    /*val writer = File(outputName).bufferedWriter()
-    val input = File(inputName).readLines()
-    var currentIndent = 0
-    writer.write("<html>\n")
-    writer.write("<body>\n")
-    writer.write("<p>\n")
-    for (li in input) {
-        val thisIndent = countIndent(li)
-
-    }
-    writer.write("</p>\n")
-    writer.write("</body>\n")
-    writer.write("</html>")
-    writer.close()*/
     TODO()
 }
 
