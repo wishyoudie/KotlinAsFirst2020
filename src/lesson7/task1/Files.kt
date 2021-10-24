@@ -492,7 +492,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                                         sb.append("</b></i>")
                                     }
                                     else -> {
-                                        stack.push("***")
+                                        stack.push("**")
+                                        stack.push("*")
                                         sb.append("<b><i>")
                                     }
                                 }
