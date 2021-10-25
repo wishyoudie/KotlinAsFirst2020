@@ -87,7 +87,6 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
     var k = 1
     val list = (1..height * width).toList()
     res[i, j] = 1
-    if (width == 1) return res
     do {
         while (j + 1 < width && res[i, j + 1] == 0) {
             res[i, j + 1] = list[k++]
@@ -105,7 +104,7 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
             res[i - 1, j] = list[k++]
             i--
         }
-    } while (res[i, j + 1] == 0)
+    } while ((j + 1 < width && res[i, j + 1] == 0) || (i + 1 < height && res[i + 1, j] == 0))
     return res
 }
 
@@ -128,7 +127,6 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
     var i = 0
     var j = 0
     res[i, j] = 1
-    if (width == 1) return res
     var cycle = 0
     do {
         cycle++
@@ -148,7 +146,7 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
             res[i - 1, j] = cycle
             i--
         }
-    } while (res[i, j + 1] == 0)
+    } while ((j + 1 < width && res[i, j + 1] == 0) || (i + 1 < height && res[i + 1, j] == 0))
     return res
 }
 
@@ -605,8 +603,4 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     return res
     */
     TODO()
-}
-
-fun main() {
-
 }
