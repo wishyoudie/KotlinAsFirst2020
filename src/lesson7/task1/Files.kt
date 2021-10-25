@@ -453,12 +453,12 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
     val paragraphs = splitToParagraphs(lines)
     val sb = StringBuilder()
+    val stack = mutableListOf<String>()
     sb.append("<html><body>")
     for (paragraph in paragraphs) {
         if (paragraph.isEmpty()) continue
         sb.append("<p>")
         for (line in paragraph) {
-            val stack = mutableListOf<String>()
             var i = 0
             while (i < line.length) {
                 when (line[i]) {
