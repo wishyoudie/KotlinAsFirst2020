@@ -273,7 +273,7 @@ fun plusMinus(expression: String): Int {
     var res = commands[0].toInt()
     for (i in 1..(commands.size - 2) step 2) {
         val x = commands[i + 1].toInt()
-        if (x <= 0) throw IllegalArgumentException("Non-positive numbers not allowed")
+        if (x <= 0) throw IllegalArgumentException("Non-positive number in $expression")
         when (commands[i]) {
             "+" -> res += x
             "-" -> res -= x

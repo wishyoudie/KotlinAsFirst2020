@@ -87,27 +87,25 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
     var k = 1
     val list = (1..height * width).toList()
     res[i, j] = 1
-    try {
-        do {
-            while (j + 1 < width && res[i, j + 1] == 0) {
-                res[i, j + 1] = list[k++]
-                j++
-            }
-            while (i + 1 < height && res[i + 1, j] == 0) {
-                res[i + 1, j] = list[k++]
-                i++
-            }
-            while (j > 0 && res[i, j - 1] == 0) {
-                res[i, j - 1] = list[k++]
-                j--
-            }
-            while (i > 0 && res[i - 1, j] == 0) {
-                res[i - 1, j] = list[k++]
-                i--
-            }
-        } while (res[i, j + 1] == 0)
-    } catch (e: IndexOutOfBoundsException) {
-    }
+    if (width == 1) return res
+    do {
+        while (j + 1 < width && res[i, j + 1] == 0) {
+            res[i, j + 1] = list[k++]
+            j++
+        }
+        while (i + 1 < height && res[i + 1, j] == 0) {
+            res[i + 1, j] = list[k++]
+            i++
+        }
+        while (j > 0 && res[i, j - 1] == 0) {
+            res[i, j - 1] = list[k++]
+            j--
+        }
+        while (i > 0 && res[i - 1, j] == 0) {
+            res[i - 1, j] = list[k++]
+            i--
+        }
+    } while (res[i, j + 1] == 0)
     return res
 }
 
@@ -130,29 +128,27 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
     var i = 0
     var j = 0
     res[i, j] = 1
+    if (width == 1) return res
     var cycle = 0
-    try {
-        do {
-            cycle++
-            while (j + 1 < width && res[i, j + 1] == 0) {
-                res[i, j + 1] = cycle
-                j++
-            }
-            while (i + 1 < height && res[i + 1, j] == 0) {
-                res[i + 1, j] = cycle
-                i++
-            }
-            while (j > 0 && res[i, j - 1] == 0) {
-                res[i, j - 1] = cycle
-                j--
-            }
-            while (i > 0 && res[i - 1, j] == 0) {
-                res[i - 1, j] = cycle
-                i--
-            }
-        } while (res[i, j + 1] == 0)
-    } catch (e: IndexOutOfBoundsException) {
-    }
+    do {
+        cycle++
+        while (j + 1 < width && res[i, j + 1] == 0) {
+            res[i, j + 1] = cycle
+            j++
+        }
+        while (i + 1 < height && res[i + 1, j] == 0) {
+            res[i + 1, j] = cycle
+            i++
+        }
+        while (j > 0 && res[i, j - 1] == 0) {
+            res[i, j - 1] = cycle
+            j--
+        }
+        while (i > 0 && res[i - 1, j] == 0) {
+            res[i - 1, j] = cycle
+            i--
+        }
+    } while (res[i, j + 1] == 0)
     return res
 }
 
@@ -188,14 +184,12 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
     while (list[k] != height * width) {
         j = findRight(res).second
         i = findRight(res).first
-        try {
-            while (i < height && j >= 0) {
-                res[i, j] = list[k++]
-                i++
-                j--
-            }
-        } catch (e: IndexOutOfBoundsException) {
+        while (i < height && j >= 0) {
+            res[i, j] = list[k++]
+            i++
+            j--
         }
+
     }
     res[height - 1, width - 1] = height * width
 
@@ -564,6 +558,7 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
 fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
+    /*
     if (matrix.width != 4 || matrix.height != 4) throw IllegalArgumentException("Not 4x4 matrix")
 
     // Step 1: decide which solution is needed
@@ -608,6 +603,8 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
 
 
     return res
+    */
+    TODO()
 }
 
 fun main() {
