@@ -440,11 +440,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         val paragraphs = mutableListOf(mutableListOf<String>())
         var i = 0
         for (line in lines) {
-            if (line.isNotEmpty())
-                paragraphs[i].add(line)
-            else {
+            if (line.isEmpty() || line.all { it == ' ' }) {
                 paragraphs.add(mutableListOf())
                 i++
+            } else {
+                paragraphs[i].add(line)
             }
         }
         return paragraphs
