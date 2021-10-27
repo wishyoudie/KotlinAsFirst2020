@@ -519,7 +519,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     }
     sb.append("</p></body></html>")
     val writer = File(outputName).bufferedWriter()
-    writer.write(sb.toString().replace("<p></p>", ""))
+    //writer.write(sb.toString().replace("<p></p>", ""))
+    writer.write("$sb")
     writer.close()
 }
 
