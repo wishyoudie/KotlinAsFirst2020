@@ -442,6 +442,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     sb.append("<html><body><p>")
     for (line in lines) {
         if (line.isEmpty() || line == " " || line == "\t") {
+            if ("$sb".length > 7 && sb.toString().substring(sb.length - 7) == "</p><p>")
+                continue
             sb.append("</p>")
             if (lines.indexOf(line) != lines.size - 1)
                 sb.append("<p>")
