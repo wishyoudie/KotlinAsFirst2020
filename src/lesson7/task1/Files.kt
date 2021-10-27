@@ -538,6 +538,23 @@ fun countIndent(str: String): Int {
  * Сложная (23 балла)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
+    /*val lines = File(inputName).readLines()
+    val writer = File(outputName).bufferedWriter()
+    if (lines.isEmpty())
+        writer.write("<html><body><p></p></body></html>")
+    else {
+        val stack = mutableListOf<String>()
+        val sb = StringBuilder()
+        var prevIndent = 0
+        sb.append("<html><body><p>")
+        for (i in lines.indices) {
+            val currentIndent = countIndent(lines[i])
+
+        }
+        sb.append("</p></body></html>")
+        writer.write("$sb")
+    }
+    writer.close()*/
     TODO()
 }
 
@@ -632,72 +649,38 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
-}
-
-/*
-val lines = File(inputName).readLines()
-    val paragraphs = splitToParagraphs(lines)
-    val sb = StringBuilder()
-    sb.append("<html><body>")
-    for (paragraph in paragraphs) {
-        if (paragraph.isEmpty()) continue
-        sb.append("<p>")
-        for (line in paragraph) {
-            var flagItalic = false
-            var flagBold = false
-            var flagCrossed = false
-            var flagBoth = false
-            var i = 0
-            while (i < line.length && line[i] != '\n') {
-                if (line[i] == '~' && line[i + 1] == '~') {
-                    sb.append(if (flagCrossed) "</s>" else "<s>")
-                    flagCrossed = !flagCrossed
-                    i += 2
-                } else if (line[i] == '*') {
-                    if (i < line.length - 1 && line[i + 1] == '*') {
-                        if (i < line.length - 2 && line[i + 2] == '*') {
-                            if (!flagBold) {
-                                if (!flagItalic) {
-                                    sb.append("<b><i>")
-                                    flagBoth = true
-                                } else
-                                    sb.append("</i><b>")
-                            } else {
-                                if (!flagItalic)
-                                    sb.append("</b><i>")
-                                else {
-                                    if (flagBoth) {
-                                        sb.append("</i></b>")
-                                        flagBoth = false
-                                    } else
-                                        sb.append("</b></i>")
-                                }
-                            }
-                            flagItalic = !flagItalic
-                            flagBold = !flagBold
-                            i += 3
-                        } else {
-                            sb.append(if (flagBold) "</b>" else "<b>")
-                            flagBold = !flagBold
-                            i += 2
-                        }
-                    } else {
-                        sb.append(if (flagItalic) "</i>" else "<i>")
-                        flagItalic = !flagItalic
-                        i++
-                    }
-                } else {
-                    sb.append(line[i])
-                    i++
-                }
-            }
-            sb.append("\n")
-        }
-        sb.append("</p>")
-    }
-    sb.append("</body></html>")
     val writer = File(outputName).bufferedWriter()
-    writer.write("$sb")
+    val res = lhv / rhv
+    val maxlen = lhv.toString().length + 1
+    val digits = convert(lhv, 10)
+    var i = 0
+    var num = 0
+    var dashes = 0
+    var tmp = 0
+    var rightIndent = 0
+    while (num / rhv == 0 && i < digits.size) {
+        num *= 10
+        num += digits[i]
+        i++
+    }
+    writer.write(" $lhv | $rhv\n")
+    tmp = num / rhv * rhv
+    writer.write("-${tmp}${CharMulInt(' ', 3 + digits.size - num.toString().length)}$res\n")
+    dashes = tmp.toString().length + 1
+    writer.write("${CharMulInt('-', dashes)}\n")
+    rightIndent = digits.size - i
+    while (i < digits.size) {
+        num -= tmp
+        val hasZero = if (num == 0) 1 else 0
+        num *= 10
+        num += digits[i++]
+        rightIndent--
+        tmp = num / rhv * rhv
+        dashes = tmp.toString().length + 1
+        writer.write("${CharMulInt(' ', maxlen - num.toString().length - rightIndent - hasZero)}${if (hasZero == 1) 0 else ""}$num\n")
+        writer.write("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}-$tmp\n")
+        writer.write("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}${CharMulInt('-', dashes)}\n")
+    }
+    writer.write("${CharMulInt(' ', maxlen - (lhv % rhv).toString().length)}${lhv % rhv}")
     writer.close()
- */
+}
