@@ -676,10 +676,17 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         num += digits[i++]
         rightIndent--
         tmp = num / rhv * rhv
-        dashes = tmp.toString().length + 1
-        writer.write("${CharMulInt(' ', maxlen - num.toString().length - rightIndent - hasZero)}${if (hasZero == 1) 0 else ""}$num\n")
+        dashes = if (tmp == 0) num.toString().length else tmp.toString().length + 1
+        writer.write(
+            "${
+                CharMulInt(
+                    ' ',
+                    maxlen - num.toString().length - rightIndent - hasZero
+                )
+            }${if (hasZero == 1) 0 else ""}$num\n"
+        )
         writer.write("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}-$tmp\n")
-        writer.write("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}${CharMulInt('-', dashes)}\n")
+        writer.write("${CharMulInt(' ', maxlen - dashes - rightIndent)}${CharMulInt('-', dashes)}\n")
     }
     writer.write("${CharMulInt(' ', maxlen - (lhv % rhv).toString().length)}${lhv % rhv}")
     writer.close()
