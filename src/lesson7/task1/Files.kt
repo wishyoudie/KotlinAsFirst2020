@@ -676,7 +676,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         num += digits[i++]
         rightIndent--
         tmp = num / rhv * rhv
-        dashes = if (tmp == 0) num.toString().length else tmp.toString().length + 1
+        dashes = if (tmp == 0) num.toString().length + hasZero else tmp.toString().length + 1
         writer.write(
             "${
                 CharMulInt(
