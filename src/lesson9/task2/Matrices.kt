@@ -2,29 +2,12 @@
 
 package lesson9.task2
 
-import lesson9.task1.Cell
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
-import ru.spbstu.wheels.defaultCompareTo
-import kotlin.math.PI
-import kotlin.math.min
-import kotlin.math.max
+import kotlin.math.*
+import java.util.PriorityQueue
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
-
-fun Matrix<Int>.toLineString(): String {
-    val sb = StringBuilder()
-    for (h in 0 until height) {
-        sb.append("[")
-        for (w in 0 until width - 1) {
-            sb.append(this[h, w])
-            sb.append(", ")
-        }
-        sb.append(this[h, width - 1])
-        sb.append("]\n")
-    }
-    return "$sb"
-}
 
 /**
  * Пример
@@ -484,123 +467,126 @@ fun Matrix<Int>.toList(): MutableList<Int> {
 
 /**
  * Сложная (8 баллов)
- *
- * В матрице matrix размером 4х4 дана исходная позиция для игры в 15, например
- *  5  7  9  1
- *  2 12 14 15
- *  3  4  6  8
- * 10 11 13  0
- *
- * Здесь 0 обозначает пустую клетку, а 1-15 – фишки с соответствующими номерами.
- * Напомним, что "игра в 15" имеет квадратное поле 4х4, по которому двигается 15 фишек,
- * одна клетка всегда остаётся пустой. Цель игры -- упорядочить фишки на игровом поле.
- *
- * В списке moves задана последовательность ходов, например [8, 6, 13, 11, 10, 3].
- * Ход задаётся номером фишки, которая передвигается на пустое место (то есть, меняется местами с нулём).
- * Фишка должна примыкать к пустому месту по горизонтали или вертикали, иначе ход не будет возможным.
- * Все номера должны быть в пределах от 1 до 15.
- * Определить финальную позицию после выполнения всех ходов и вернуть её.
- * Если какой-либо ход является невозможным или список содержит неверные номера,
- * бросить IllegalStateException.
- *
- * В данном случае должно получиться
- * 5  7  9  1
- * 2 12 14 15
- * 0  4 13  6
- * 3 10 11  8
  */
 fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
-    val res = matrix
     for (move in moves)
-        res.swap(move, 0)
-    return res
+        matrix.swap(move, 0)
+    return matrix
+}
+
+fun calculateDistance(a: Int, b: Int) = abs(a % 4 - b % 4) + abs(a / 4 - b / 4)
+
+class Chain(private val state: List<Int>, private val history: List<Int> = listOf<Int>()) {
+
+    fun getState() = this.state.toString()
+    fun getHistory() = this.history
+
+    private fun heuristic(): Int {
+        val row = listOf(3, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3)
+        val col = listOf(3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2)
+        var res = 0
+        for (i in 0 until 4)
+            for (j in 0 until 4)
+                if (state[i * 4 + j] != 0)
+                    res += abs(row[state[i * 4 + j]] - i) + abs(col[state[i * 4 + j]] - j)
+        return res
+    }
+
+    fun g() = history.size
+    fun f() = g() + heuristic()
+
+    fun getNeighbours(): List<Chain> {
+        val neighs = mutableListOf<Chain>()
+        val zero_coord = state.indexOf(0)
+
+        if (zero_coord < 15 && calculateDistance(zero_coord, zero_coord + 1) == 1) {
+            val new_state = state.toMutableList()
+            new_state[zero_coord + 1] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord + 1] }
+            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+        }
+
+        if (zero_coord >= 1 && calculateDistance(zero_coord, zero_coord - 1) == 1) {
+            val new_state = state.toMutableList()
+            new_state[zero_coord - 1] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord - 1] }
+            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+        }
+
+        if (zero_coord < 12 && calculateDistance(zero_coord, zero_coord + 4) == 1) {
+            val new_state = state.toMutableList()
+            new_state[zero_coord + 4] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord + 4] }
+            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+        }
+        if (zero_coord >= 4 && calculateDistance(zero_coord, zero_coord - 4) == 1) {
+            val new_state = state.toMutableList()
+            new_state[zero_coord - 4] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord - 4] }
+            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+        }
+        return neighs
+    }
+
+    override fun toString(): String {
+        var i = 0
+        val sb = StringBuilder()
+        while (i < 16) {
+            sb.append("${state[i]}  ")
+            if (i % 4 == 3) {
+                sb.append("\n")
+            }
+            i++
+        }
+        return "$sb"
+    }
+}
+
+fun a_star(start: Chain, finish: Chain): Chain {
+    val nodes = mutableMapOf<String, Int>()
+    val chainHeap = PriorityQueue<Chain>(compareBy { it.f() })
+    val goal = finish.getState()
+
+    chainHeap.add(start)
+    while (chainHeap.isNotEmpty()) {
+        val currentChain = chainHeap.poll()
+        val currentNode = currentChain.getState()
+        if (currentNode == goal)
+            return currentChain
+        nodes[currentNode] = currentChain.f()
+        for (ch in currentChain.getNeighbours()) {
+            if (ch.getState() in nodes) {
+                if (ch.f() >= nodes[ch.getState()]!!)
+                    continue
+                nodes[ch.getState()] = ch.f()
+            }
+            chainHeap.add(ch)
+        }
+    }
+    return Chain(listOf(-1))
 }
 
 /**
  * Очень сложная (32 балла)
- *
- * В матрице matrix размером 4х4 дана исходная позиция для игры в 15, например
- *  5  7  9  2
- *  1 12 14 15
- *  3  4  6  8
- * 10 11 13  0
- *
- * Здесь 0 обозначает пустую клетку, а 1-15 – фишки с соответствующими номерами.
- * Напомним, что "игра в 15" имеет квадратное поле 4х4, по которому двигается 15 фишек,
- * одна клетка всегда остаётся пустой.
- *
- * Цель игры -- упорядочить фишки на игровом поле, приведя позицию к одному из следующих двух состояний:
- *
- *  1  2  3  4          1  2  3  4
- *  5  6  7  8   ИЛИ    5  6  7  8
- *  9 10 11 12          9 10 11 12
- * 13 14 15  0         13 15 14  0
- *
- * Можно математически доказать, что РОВНО ОДНО из этих двух состояний достижимо из любой исходной позиции.
- *
- * Вернуть решение -- список ходов, приводящих исходную позицию к одной из двух упорядоченных.
- * Каждый ход -- это перемена мест фишки с заданным номером с пустой клеткой (0),
- * при этом заданная фишка должна по горизонтали или по вертикали примыкать к пустой клетке (но НЕ по диагонали).
- * К примеру, ход 13 в исходной позиции меняет местами 13 и 0, а ход 11 в той же позиции невозможен.
- *
- * Одно из решений исходной позиции:
- *
- * [8, 6, 14, 12, 4, 11, 13, 14, 12, 4,
- * 7, 5, 1, 3, 11, 7, 3, 11, 7, 12, 6,
- * 15, 4, 9, 2, 4, 9, 3, 5, 2, 3, 9,
- * 15, 8, 14, 13, 12, 7, 11, 5, 7, 6,
- * 9, 15, 8, 14, 13, 9, 15, 7, 6, 12,
- * 9, 13, 14, 15, 12, 11, 10, 9, 13, 14,
- * 15, 12, 11, 10, 9, 13, 14, 15]
- *
- * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
 fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
-    /*
     if (matrix.width != 4 || matrix.height != 4) throw IllegalArgumentException("Not 4x4 matrix")
 
-    // Step 1: decide which solution is needed
-
-    val f = matrix.toList()
-    val zeroCoords = matrix.find(0)
-    var N = zeroCoords.first
+    val input = matrix.toList()
+    var n = input.indexOf(0) / 4 + 1
     for (i in 1..15) {
         var k = 0
-        for (j in matrix.find(i).first * 4 + matrix.find(i).second until 16)
-            if (f[j] < i)
+        for (j in input.indexOf(i) until 16)
+            if (input[j] != 0 && input[j] < i)
                 k++
-        N += k
+        n += k
     }
-    val solutions = mapOf(
-        "even" to createMatrix(
-            4, 4, listOf(
-                listOf(1, 2, 3, 4),
-                listOf(5, 6, 7, 8),
-                listOf(9, 10, 11, 12),
-                listOf(13, 14, 15, 0)
-            )
-        ),
-        "odd" to createMatrix(
-            4, 4, listOf(
-                listOf(1, 2, 3, 4),
-                listOf(5, 6, 7, 8),
-                listOf(9, 10, 11, 12),
-                listOf(13, 15, 14, 0)
-            )
-        )
-    )
-
-    val sol = solutions[if (N % 2 == 0) "even" else "odd"]
-
-    // Step 2: check if already solved
-    if (matrix == sol) return listOf()
-
-    // Step 3: solve first row
-    val res = mutableListOf<Int>()
-
-
-
-    return res
-    */
-    TODO()
+    if (n % 2 != 0) input[input.indexOf(14)] = 15.also { input[input.indexOf(15)] = 14 }
+    val result = a_star(Chain(input), Chain(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0))).getHistory()
+        .toMutableList()
+    if (n % 2 != 0)
+        for (i in result.indices)
+            when (result[i]) {
+                14 -> result[i] = 15
+                15 -> result[i] = 14
+                else -> {
+                }
+            }
+    return result
 }
