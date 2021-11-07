@@ -485,10 +485,9 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
         val row = listOf(3, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3)
         val col = listOf(3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2)
         var res = 0
-        for (i in 0 until 4)
-            for (j in 0 until 4)
-                if (state[i * 4 + j] != 0)
-                    res += abs(row[state[i * 4 + j]] - i) + abs(col[state[i * 4 + j]] - j)
+        for (i in 0 until 16)
+            if (state[i] != 0)
+                res += abs(row[state[i]] - i / 4) + abs(col[state[i]] - i % 4)
         return res
     }
 
@@ -549,12 +548,12 @@ fun a_star(start: Chain, finish: Chain): Chain {
         val currentNode = currentChain.getState()
         if (currentNode == goal)
             return currentChain
-        nodes[currentNode] = currentChain.f()
+        nodes[currentNode] = currentChain.g()
         for (ch in currentChain.getNeighbours()) {
             if (ch.getState() in nodes) {
-                if (ch.f() >= nodes[ch.getState()]!!)
+                if (ch.g() >= nodes[ch.getState()]!!)
                     continue
-                nodes[ch.getState()] = ch.f()
+                nodes[ch.getState()] = ch.g()
             }
             chainHeap.add(ch)
         }
