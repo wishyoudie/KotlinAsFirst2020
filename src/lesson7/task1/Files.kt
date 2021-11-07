@@ -666,8 +666,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val t = "${if (num.toString().length < tmp.toString().length + 1) " " else ""}$lhv | $rhv\n"
     val maxlen = t.substringBefore('|').length - 1
     sb.append(t)
-    sb.append("-${tmp}${CharMulInt(' ', 3 + digits.size - num.toString().length)}$res\n")
-    dashes = tmp.toString().length + 1
+    sb.append("${CharMulInt(' ', num.toString().length - (tmp.toString().length + 1))}-${tmp}${CharMulInt(' ', 3 + digits.size - num.toString().length)}$res\n")
+    dashes = max(num.toString().length, tmp.toString().length + 1)
     sb.append("${CharMulInt('-', dashes)}\n")
     rightIndent = digits.size - i
     while (i < digits.size) {
@@ -677,9 +677,14 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         num += digits[i++]
         rightIndent--
         tmp = num / rhv * rhv
-        dashes = if (tmp == 0) num.toString().length + hasZero else tmp.toString().length + 1
+        dashes = max(num.toString().length + hasZero, tmp.toString().length + 1)
         sb.append(
-            "${CharMulInt(' ', maxlen - num.toString().length - rightIndent - hasZero)}${if (hasZero == 1) 0 else ""}$num\n"
+            "${
+                CharMulInt(
+                    ' ',
+                    maxlen - num.toString().length - rightIndent - hasZero
+                )
+            }${if (hasZero == 1) "0" else ""}$num\n"
         )
         sb.append("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}-$tmp\n")
         sb.append("${CharMulInt(' ', maxlen - dashes - rightIndent)}${CharMulInt('-', dashes)}\n")
