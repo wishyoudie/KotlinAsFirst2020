@@ -522,7 +522,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             }
         }
         sb.append("</p></body></html>")
-        writer.write(sb.toString().replace("<p></p>", "").replace("<p> </p>", "").replace("<p>\t</p>", ""))
+        writer.write(sb.toString().replace("<p></p>", "").replace("<p> </p>", "").replace("<p>\t</p>", "").replace("</p></p>", "</p>"))
     }
     writer.close()
 }
