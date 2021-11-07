@@ -649,9 +649,8 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
+    val sb = StringBuilder()
     val res = lhv / rhv
-    val maxlen = lhv.toString().length + 1
     val digits = convert(lhv, 10)
     var i = 0
     var num = 0
@@ -663,11 +662,13 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         num += digits[i]
         i++
     }
-    writer.write(" $lhv | $rhv\n")
     tmp = num / rhv * rhv
-    writer.write("-${tmp}${CharMulInt(' ', 3 + digits.size - num.toString().length)}$res\n")
+    val t = "${if (num.toString().length < tmp.toString().length + 1) " " else ""}$lhv | $rhv\n"
+    val maxlen = t.substringBefore('|').length - 1
+    sb.append(t)
+    sb.append("-${tmp}${CharMulInt(' ', 3 + digits.size - num.toString().length)}$res\n")
     dashes = tmp.toString().length + 1
-    writer.write("${CharMulInt('-', dashes)}\n")
+    sb.append("${CharMulInt('-', dashes)}\n")
     rightIndent = digits.size - i
     while (i < digits.size) {
         num -= tmp
@@ -677,17 +678,14 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         rightIndent--
         tmp = num / rhv * rhv
         dashes = if (tmp == 0) num.toString().length + hasZero else tmp.toString().length + 1
-        writer.write(
-            "${
-                CharMulInt(
-                    ' ',
-                    maxlen - num.toString().length - rightIndent - hasZero
-                )
-            }${if (hasZero == 1) 0 else ""}$num\n"
+        sb.append(
+            "${CharMulInt(' ', maxlen - num.toString().length - rightIndent - hasZero)}${if (hasZero == 1) 0 else ""}$num\n"
         )
-        writer.write("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}-$tmp\n")
-        writer.write("${CharMulInt(' ', maxlen - dashes - rightIndent)}${CharMulInt('-', dashes)}\n")
+        sb.append("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}-$tmp\n")
+        sb.append("${CharMulInt(' ', maxlen - dashes - rightIndent)}${CharMulInt('-', dashes)}\n")
     }
-    writer.write("${CharMulInt(' ', maxlen - (lhv % rhv).toString().length)}${lhv % rhv}")
+    sb.append("${CharMulInt(' ', maxlen - (lhv % rhv).toString().length)}${lhv % rhv}")
+    val writer = File(outputName).bufferedWriter()
+    writer.write("$sb")
     writer.close()
 }
