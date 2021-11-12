@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import java.lang.NumberFormatException
+import lesson2.task2.daysInMonth
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
@@ -81,9 +82,6 @@ fun dateStrToDigit(str: String): String {
     if (line.size != 3) {
         return ""
     }
-    val date: Int
-    val year: String
-    val month: String
     val monthToNumber = mutableMapOf(
         "января" to "01",
         "февраля" to "02",
@@ -98,38 +96,17 @@ fun dateStrToDigit(str: String): String {
         "ноября" to "11",
         "декабря" to "12"
     )
-    val monthToDate = mutableMapOf(
-        "января" to 31,
-        "февраля" to 29,
-        "марта" to 31,
-        "апреля" to 30,
-        "мая" to 31,
-        "июня" to 30,
-        "июля" to 31,
-        "августа" to 31,
-        "сентября" to 30,
-        "октября" to 31,
-        "ноября" to 30,
-        "декабря" to 31
-    )
 
     if (line[1] !in monthToNumber) {
         return ""
     }
 
-    val yearNumber = line[2].toInt()
-    date = if (line[1] == "февраля" && yearNumber % 4 != 0 || (yearNumber % 100 == 0 && yearNumber % 400 != 0)) {
-        28
-    } else if (line[1] == "февраля") {
-        29
-    } else {
-        line[0].toInt()
-    }
-    if (date > monthToDate[line[1]]!! || date != line[0].toInt()) {
+    val date = line[0].toInt()
+    val month = monthToNumber[line[1]]!!
+    val year = line[2]
+    if (date > daysInMonth(month.toInt(), year.toInt())) {
         return ""
     }
-    month = monthToNumber[line[1]]!!
-    year = line[2]
 
     return String.format("%02d.%s.%s", date, month, year)
 }
@@ -149,9 +126,6 @@ fun dateDigitToStr(digital: String): String {
     if (line.size != 3) {
         return ""
     }
-    val date: Int
-    val year: String
-    val month: String
     val numberToMonth = mutableMapOf(
         "01" to "января",
         "02" to "февраля",
@@ -166,38 +140,17 @@ fun dateDigitToStr(digital: String): String {
         "11" to "ноября",
         "12" to "декабря"
     )
-    val monthToDate = mutableMapOf(
-        "01" to 31,
-        "02" to 29,
-        "03" to 31,
-        "04" to 30,
-        "05" to 31,
-        "06" to 30,
-        "07" to 31,
-        "08" to 31,
-        "09" to 30,
-        "10" to 31,
-        "11" to 30,
-        "12" to 31
-    )
 
     if (line[1] !in numberToMonth) {
         return ""
     }
 
-    val yearNumber = line[2].toInt()
-    date = if (line[1] == "02" && yearNumber % 4 != 0 || (yearNumber % 100 == 0 && yearNumber % 400 != 0)) {
-        28
-    } else if (line[1] == "02") {
-        29
-    } else {
-        line[0].toInt()
-    }
-    if (date > monthToDate[line[1]]!! || date != line[0].toInt()) {
+    val date = line[0].toInt()
+    val month = numberToMonth[line[1]]!!
+    val year = line[2]
+    if (date > daysInMonth(line[1].toInt(), year.toInt())) {
         return ""
     }
-    month = numberToMonth[line[1]]!!
-    year = line[2]
 
     return String.format("%d %s %s", date, month, year)
 }
