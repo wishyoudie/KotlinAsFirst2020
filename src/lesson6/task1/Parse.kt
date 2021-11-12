@@ -4,9 +4,7 @@ package lesson6.task1
 
 import lesson2.task2.daysInMonth
 import kotlin.NumberFormatException
-import kotlin.math.exp
 import kotlin.math.max
-import kotlin.math.min
 
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13

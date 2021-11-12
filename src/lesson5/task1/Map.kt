@@ -3,7 +3,6 @@
 package lesson5.task1
 
 import kotlin.math.max
-import java.util.*
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -514,7 +513,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
 
     val items = mutableMapOf<Int, String>()
     var z = 0
-    for ((name, p) in treasures) {
+    for ((name, _) in treasures) {
         items[z] = name
         z++
     }
@@ -542,14 +541,4 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
         }
 
     return res
-}
-
-
-fun main() {
-    println(
-        bagPacking(
-            mapOf("Слиток" to (1000 to 5000), "Кубок" to (500 to 2000)),
-            850
-        )
-    )
 }

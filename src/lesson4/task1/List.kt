@@ -4,7 +4,6 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson3.task1.isPrime
-import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -306,16 +305,9 @@ fun decimal(digits: List<Int>, base: Int): Int {
 fun decimalFromString(str: String, base: Int): Int {
     var res = 0
     for (i in str.length - 1 downTo 0) {
-        var x = 0
-        x = if (str[i] > '9') str[i] - 'a' + 10 else str[i].digitToInt()
+        val x = if (str[i] > '9') str[i] - 'a' + 10 else str[i].digitToInt()
         res += x * base.toDouble().pow(str.length - i - 1).toInt()
     }
-    return res
-}
-
-fun CharMulInt(ch: Char, n: Int): String {
-    var res = ""
-    for (i in 1..n) res += ch
     return res
 }
 
@@ -334,176 +326,23 @@ fun roman(n: Int): String {
     for (i in list.indices) {
         list[i] *= 10.0.pow(list.size - i - 1).toInt()
         res += when {
-            list[i] < 4 -> CharMulInt('I', list[i])
+            list[i] < 4 -> "I".repeat(list[i])
             list[i] == 4 -> "IV"
-            list[i] in 5..8 -> 'V' + CharMulInt('I', list[i] - 5)
+            list[i] in 5..8 -> "V" + "I".repeat(list[i] - 5)
             list[i] == 9 -> "IX"
-            list[i] in 10..39 -> CharMulInt('X', list[i] / 10)
+            list[i] in 10..39 -> "X".repeat(list[i] / 10)
             list[i] == 40 -> "XL"
-            list[i] in 50..89 -> 'L' + CharMulInt('X', (list[i] - 50) / 10)
+            list[i] in 50..89 -> "L" + "X".repeat((list[i] - 50) / 10)
             list[i] == 90 -> "XC"
-            list[i] in 100..399 -> CharMulInt('C', list[i] / 100)
+            list[i] in 100..399 -> "C".repeat(list[i] / 100)
             list[i] == 400 -> "CD"
-            list[i] in 500..899 -> 'D' + CharMulInt('C', (list[i] - 500) / 100)
+            list[i] in 500..899 -> "D" + "C".repeat((list[i] - 500) / 100)
             list[i] == 900 -> "CM"
-            list[i] > 900 -> CharMulInt('M', list[i] / 1000)
+            list[i] > 900 -> "M".repeat(list[i] / 1000)
             else -> ""
         }
     }
     return res
-}
-
-// 123
-fun russianFirstHundred(n: Int): String {
-    // Turn number into list of digits
-    val listHundred = convert(n, 10)
-
-    var res = ""
-    var firstDigit = 0
-    var secondDigit = 0
-    var thirdDigit = 0
-
-    // Realize indices
-    when (listHundred.size) {
-        3 -> { // if n >= 100
-            firstDigit = 0
-            secondDigit = 1
-            thirdDigit = 2
-        }
-        2 -> { // if n in 10..99
-            secondDigit = 0
-            thirdDigit = 1
-        }
-        else -> thirdDigit = 0 // if n in 0..9
-    }
-
-
-    if (listHundred.size == 3) {
-        res += when (listHundred[firstDigit]) {
-            1 -> "сто"
-            2 -> "двести"
-            3 -> "триста"
-            4 -> "четыреста"
-            5 -> "пятьсот"
-            6 -> "шестьсот"
-            7 -> "семьсот"
-            8 -> "восемьсот"
-            else -> "девятьсот"
-        }
-    }
-
-    if (listHundred.size >= 2) {
-        when (listHundred[secondDigit]) {
-            2 -> res += "двадцать"
-            3 -> res += "тридцать"
-            4 -> res += "сорок"
-            5 -> res += "пятьдесят"
-            6 -> res += "шестьдесят"
-            7 -> res += "семьдесят"
-            8 -> res += "восемьдесят"
-            9 -> res += "девяносто"
-            0 -> res += ""
-            else -> res += when (listHundred[thirdDigit]) {
-                0 -> "десять"
-                1 -> "одиннадцать"
-                2 -> "двенадцать"
-                3 -> "тринадцать"
-                4 -> "четырнадцать"
-                5 -> "пятнадцать"
-                6 -> "шестнадцать"
-                7 -> "семнадцать"
-                8 -> "восемнадцать"
-                else -> "девятнадцать"
-            }
-        }
-    }
-    if (listHundred.size == 1 || listHundred[secondDigit] != 1) {
-        res += when (listHundred[thirdDigit]) {
-            1 -> "один"
-            2 -> "два"
-            3 -> "три"
-            4 -> "четыре"
-            5 -> "пять"
-            6 -> "шесть"
-            7 -> "семь"
-            8 -> "восемь"
-            9 -> "девять"
-            else -> ""
-        }
-    }
-    return res
-}
-
-fun go(n: Int, h: Boolean): String {
-    if (n == 0) return ""
-    var goRes = ""
-    val digits = convert(n, 10)
-    var len = digits.size
-    var currentDigit = 0
-    while (len > 0) {
-        when (len) {
-            3 -> {
-                goRes += when (digits[currentDigit]) {
-                    9 -> "девятьсот "
-                    8 -> "восемьсот "
-                    7 -> "семьсот "
-                    6 -> "шестьсот "
-                    5 -> "пятьсот "
-                    4 -> "четыреста "
-                    3 -> "триста "
-                    2 -> "двести "
-                    else -> "сто "
-                }
-                len--
-                currentDigit++
-            }
-            2 -> {
-                goRes.trim()
-                if (digits[currentDigit] != 1) len-- else len -= 2
-                when (digits[currentDigit]) {
-                    9 -> goRes += "девяносто "
-                    8 -> goRes += "восемьдесят "
-                    7 -> goRes += "семьдесят "
-                    6 -> goRes += "шестьдесят "
-                    5 -> goRes += "пятьдесят "
-                    4 -> goRes += "сорок "
-                    3 -> goRes += "тридцать "
-                    2 -> goRes += "двадцать "
-                    0 -> goRes += ""
-                    else -> goRes += when (digits[currentDigit + 1]) {
-                        9 -> "девятнадцать"
-                        8 -> "восемнадцать"
-                        7 -> "семнадцать"
-                        6 -> "шестнадцать"
-                        5 -> "пятнадцать"
-                        4 -> "четырнадцать"
-                        3 -> "тринадцать"
-                        2 -> "двенадцать"
-                        1 -> "одиннадцать"
-                        else -> "десять"
-                    }
-                }
-                currentDigit++
-            }
-            1 -> {
-                goRes.trim()
-                len--
-                goRes += when (digits[currentDigit]) {
-                    9 -> "девять"
-                    8 -> "восемь"
-                    7 -> "семь"
-                    6 -> "шесть"
-                    5 -> "пять"
-                    4 -> "четыре"
-                    3 -> "три"
-                    2 -> if (h) "две" else "два"
-                    1 -> if (h) "одна" else "один"
-                    else -> ""
-                }
-            }
-        }
-    }
-    return goRes.trim()
 }
 
 /**
@@ -514,6 +353,78 @@ fun go(n: Int, h: Boolean): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
+    fun go(n: Int, h: Boolean): String {
+        if (n == 0) return ""
+        var goRes = ""
+        val digits = convert(n, 10)
+        var len = digits.size
+        var currentDigit = 0
+        while (len > 0) {
+            when (len) {
+                3 -> {
+                    goRes += when (digits[currentDigit]) {
+                        9 -> "девятьсот "
+                        8 -> "восемьсот "
+                        7 -> "семьсот "
+                        6 -> "шестьсот "
+                        5 -> "пятьсот "
+                        4 -> "четыреста "
+                        3 -> "триста "
+                        2 -> "двести "
+                        else -> "сто "
+                    }
+                    len--
+                    currentDigit++
+                }
+                2 -> {
+                    goRes.trim()
+                    if (digits[currentDigit] != 1) len-- else len -= 2
+                    when (digits[currentDigit]) {
+                        9 -> goRes += "девяносто "
+                        8 -> goRes += "восемьдесят "
+                        7 -> goRes += "семьдесят "
+                        6 -> goRes += "шестьдесят "
+                        5 -> goRes += "пятьдесят "
+                        4 -> goRes += "сорок "
+                        3 -> goRes += "тридцать "
+                        2 -> goRes += "двадцать "
+                        0 -> goRes += ""
+                        else -> goRes += when (digits[currentDigit + 1]) {
+                            9 -> "девятнадцать"
+                            8 -> "восемнадцать"
+                            7 -> "семнадцать"
+                            6 -> "шестнадцать"
+                            5 -> "пятнадцать"
+                            4 -> "четырнадцать"
+                            3 -> "тринадцать"
+                            2 -> "двенадцать"
+                            1 -> "одиннадцать"
+                            else -> "десять"
+                        }
+                    }
+                    currentDigit++
+                }
+                1 -> {
+                    goRes.trim()
+                    len--
+                    goRes += when (digits[currentDigit]) {
+                        9 -> "девять"
+                        8 -> "восемь"
+                        7 -> "семь"
+                        6 -> "шесть"
+                        5 -> "пять"
+                        4 -> "четыре"
+                        3 -> "три"
+                        2 -> if (h) "две" else "два"
+                        1 -> if (h) "одна" else "один"
+                        else -> ""
+                    }
+                }
+            }
+        }
+        return goRes.trim()
+    }
+
     if (n == 0) return "ноль"
     var res = ""
     val hundreds = mutableListOf<Int>()
@@ -531,14 +442,4 @@ fun russian(n: Int): String {
     }
     res += go(hundreds[1], false)
     return res.trim()
-}
-
-fun main() {
-    println(russian(534012))
-    println(russian(11))
-    println(russian(313))
-    println(russian(11000))
-    println(russian(123456))
-    println(russian(238))
-    println(russian(3))
 }

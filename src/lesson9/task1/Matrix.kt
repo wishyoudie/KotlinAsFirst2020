@@ -126,9 +126,3 @@ class MatrixImpl<E>(
         return result
     }
 }
-
-
-fun main() {
-    val mx = createMatrix(3, 3, 1)
-    mx[Cell(1, 1)] = 2
-}

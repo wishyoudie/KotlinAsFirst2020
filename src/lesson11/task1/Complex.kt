@@ -52,8 +52,10 @@ class Complex(val re: Double, val im: Double) {
     /**
      * Деление
      */
-    operator fun div(other: Complex): Complex = Complex((re * other.re + im * other.im) / (other.im * other.im + other.re * other.re),
-        (im * other.re - re * other.im) / (other.im * other.im + other.re * other.re))
+    operator fun div(other: Complex): Complex = Complex(
+        (re * other.re + im * other.im) / (other.im * other.im + other.re * other.re),
+        (im * other.re - re * other.im) / (other.im * other.im + other.re * other.re)
+    )
 
     /**
      * Сравнение на равенство
@@ -64,4 +66,9 @@ class Complex(val re: Double, val im: Double) {
      * Преобразование в строку
      */
     override fun toString(): String = "$re+$im" + "i"
+    override fun hashCode(): Int {
+        var result = re.hashCode()
+        result = 31 * result + im.hashCode()
+        return result
+    }
 }

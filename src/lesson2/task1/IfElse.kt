@@ -3,7 +3,6 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
-import java.util.function.DoubleBinaryOperator
 import kotlin.math.max
 import kotlin.math.sqrt
 

@@ -5,8 +5,6 @@ package lesson3.task1
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.abs
 
 // Урок 3: циклы
@@ -22,7 +20,7 @@ import kotlin.math.abs
 fun factorial(n: Int): Double {
     var result = 1.0
     for (i in 1..n) {
-        result = result * i // Please do not fix in master
+        result *= i // Please do not fix in master
     }
     return result
 }
@@ -98,7 +96,7 @@ fun fib(n: Int): Int {
     var prev = 1
     var preprev = 1
     var i = 0
-    var s = 2
+    var s: Int
     while (i < n - 2) {
         s = prev + preprev
         prev = preprev
@@ -243,7 +241,7 @@ fun hasDifferentDigits(n: Int): Boolean {
 fun sin(x: Double, eps: Double): Double {
     var res = 0.0
     var n = 1
-    var tmp = 0.0
+    var tmp: Double
     var one = 2
     val y = x % (2 * PI)
     do {
@@ -267,7 +265,7 @@ fun sin(x: Double, eps: Double): Double {
 fun cos(x: Double, eps: Double): Double {
     var res = 0.0
     var n = 0
-    var tmp = 0.0
+    var tmp: Double
     var one = 2
     val y = x % (2 * PI)
     do {
@@ -290,15 +288,15 @@ fun cos(x: Double, eps: Double): Double {
  */
 fun squareSequenceDigit(n: Int): Int {
     var curTotalDigNum = 0
-    var curNum = 1
+    var curNum: Int
     var i = 1
-    var delta = -1
+    var delta: Int
     while (true) {
         curNum = i * i
         curTotalDigNum += digitNumber(curNum)
         delta = curTotalDigNum - n
-        //println("$n, $curNum, $curTotalDigNum, $delta")
-        if (delta >= 0) return ((curNum % (10.0.pow(delta + 1).toInt()) - curNum % (10.0.pow(delta).toInt())) / 10.0.pow(delta).toInt())
+        if (delta >= 0) return ((curNum % (10.0.pow(delta + 1).toInt()) - curNum % (10.0.pow(delta)
+            .toInt())) / 10.0.pow(delta).toInt())
         i++
     }
 }
@@ -314,19 +312,15 @@ fun squareSequenceDigit(n: Int): Int {
  */
 fun fibSequenceDigit(n: Int): Int {
     var curTotalDigNum = 0
-    var curNum = 1
+    var curNum: Int
     var i = 1
-    var delta = -1
+    var delta: Int
     while (true) {
         curNum = fib(i)
         curTotalDigNum += digitNumber(curNum)
         delta = curTotalDigNum - n
-        //println("$n, $curNum, $curTotalDigNum, $delta")
-        if (delta >= 0) return ((curNum % (10.0.pow(delta + 1).toInt()) - curNum % (10.0.pow(delta).toInt())) / 10.0.pow(delta).toInt())
+        if (delta >= 0) return ((curNum % (10.0.pow(delta + 1).toInt()) - curNum % (10.0.pow(delta)
+            .toInt())) / 10.0.pow(delta).toInt())
         i++
     }
-}
-
-fun main() {
-    println(isCoPrime(2, 1))
 }

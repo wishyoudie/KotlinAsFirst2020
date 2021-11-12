@@ -2,15 +2,10 @@
 
 package lesson7.task1
 
-import kotlinx.html.*
-import kotlinx.html.stream.appendHTML
-import lesson4.task1.CharMulInt
 import lesson4.task1.convert
-import ru.spbstu.wheels.NullableMonad.filter
 import java.io.File
 import kotlin.math.floor
 import kotlin.math.max
-import java.util.ArrayDeque
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -249,7 +244,26 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    /*
+    fun String.betterIsEmpty(): Boolean =
+        if (this.isEmpty()) true
+        else this.all { it == ' ' }
+
+    val input = File(inputName).readLines()
+    val lines = mutableListOf<String>()
+    var maxlen = 0
+    for (line in input) {
+        if (line.betterIsEmpty())
+            lines.add("\n")
+        else {
+            val words = mutableListOf<String>()
+            for (w in line.split(' ')) if (w.isNotEmpty()) words.add(w)
+            val l = words.joinToString(separator = " ")
+            maxlen = max(maxlen, l.length)
+            lines.add(l)
+        }
+    }
+*/ TODO()
 }
 
 /**
@@ -289,9 +303,8 @@ fun top20Words(inputName: String): Map<String, Int> {
             cons[word] = 1
         else
             cons[word] = cons[word]!! + 1
-    val tmp = cons.toList().sortedByDescending { (k, v) -> v }.toMap()
+    val tmp = cons.toList().sortedByDescending { (_, v) -> v }.toMap()
     cons = tmp.toMutableMap()
-    //cons.forEach { (k, v) -> println("$k => $v") }
     return if (tmp.keys.size <= 20)
         tmp
     else {
@@ -522,23 +535,24 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             }
         }
         sb.append("</p></body></html>")
-        writer.write(sb.toString().replace("<p></p>", "").replace("<p> </p>", "").replace("<p>\t</p>", "").replace("</p></p>", "</p>"))
+        writer.write("$sb")
     }
     writer.close()
-}
-
-fun countIndent(str: String): Int {
-    var res = 0
-    while (str[res++] == ' ') {
-    }
-    return res - 1
 }
 
 /**
  * Сложная (23 балла)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    /*val lines = File(inputName).readLines()
+    /*
+    fun countIndent(str: String): Int {
+        var res = 0
+        while (str[res++] == ' ') {
+        }
+        return res - 1
+    }
+
+    val lines = File(inputName).readLines()
     val writer = File(outputName).bufferedWriter()
     if (lines.isEmpty())
         writer.write("<html><body><p></p></body></html>")
@@ -599,28 +613,28 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     val res = rhv * lhv
     val sumWidth = ("$res").length + 1
-    writer.write(CharMulInt(' ', sumWidth - "$lhv".length))
+    writer.write(" ".repeat(sumWidth - "$lhv".length))
     writer.write("$lhv\n")
     writer.write("*")
-    writer.write(CharMulInt(' ', sumWidth - 1 - "$rhv".length))
+    writer.write(" ".repeat(sumWidth - 1 - "$rhv".length))
     writer.write("$rhv\n")
-    writer.write(CharMulInt('-', sumWidth))
+    writer.write("-".repeat(sumWidth))
     writer.newLine()
-    val rhvdigits = convert(rhv, 10)
-    var i = rhvdigits.size - 1
-    var curNum = lhv * rhvdigits[i]
-    writer.write(CharMulInt(' ', sumWidth - "$curNum".length))
+    val rhvDigits = convert(rhv, 10)
+    var i = rhvDigits.size - 1
+    var curNum = lhv * rhvDigits[i]
+    writer.write(" ".repeat(sumWidth - "$curNum".length))
     writer.write("$curNum\n")
     i--
     while (i != -1) {
         writer.write("+")
-        curNum = lhv * rhvdigits[i]
-        writer.write(CharMulInt(' ', sumWidth + i - rhvdigits.size - "$curNum".length))
+        curNum = lhv * rhvDigits[i]
+        writer.write(" ".repeat(sumWidth + i - rhvDigits.size - "$curNum".length))
         writer.write("$curNum")
         writer.newLine()
         i--
     }
-    writer.write(CharMulInt('-', sumWidth))
+    writer.write("-".repeat(sumWidth))
     writer.newLine()
     writer.write(" ")
     writer.write("$res")
@@ -654,22 +668,22 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val digits = convert(lhv, 10)
     var i = 0
     var num = 0
-    var dashes = 0
-    var tmp = 0
-    var rightIndent = 0
     while (num / rhv == 0 && i < digits.size) {
         num *= 10
         num += digits[i]
         i++
     }
-    tmp = num / rhv * rhv
-    val t = "${if (num.toString().length < tmp.toString().length + 1) " " else ""}$lhv | $rhv\n"
+    var tmp = num / rhv * rhv
+    val n = num.toString().length - (tmp.toString().length + 1)
+    val t = "${if (n < 0) " " else ""}$lhv | $rhv\n"
     val maxlen = t.substringBefore('|').length - 1
     sb.append(t)
-    sb.append("${CharMulInt(' ', num.toString().length - (tmp.toString().length + 1))}-${tmp}${CharMulInt(' ', 3 + digits.size - num.toString().length)}$res\n")
-    dashes = max(num.toString().length, tmp.toString().length + 1)
-    sb.append("${CharMulInt('-', dashes)}\n")
-    rightIndent = digits.size - i
+    sb.append(
+        "${" ".repeat(max(n, 0))}-${tmp}${" ".repeat(3 + digits.size - num.toString().length)}$res\n"
+    )
+    var dashes = max(num.toString().length, tmp.toString().length + 1)
+    sb.append("${"-".repeat(dashes)}\n")
+    var rightIndent = digits.size - i
     while (i < digits.size) {
         num -= tmp
         val hasZero = if (num == 0) 1 else 0
@@ -679,17 +693,12 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         tmp = num / rhv * rhv
         dashes = max(num.toString().length + hasZero, tmp.toString().length + 1)
         sb.append(
-            "${
-                CharMulInt(
-                    ' ',
-                    maxlen - num.toString().length - rightIndent - hasZero
-                )
-            }${if (hasZero == 1) "0" else ""}$num\n"
+            "${" ".repeat(maxlen - num.toString().length - rightIndent - hasZero)}${if (hasZero == 1) "0" else ""}$num\n"
         )
-        sb.append("${CharMulInt(' ', maxlen - tmp.toString().length - rightIndent - 1)}-$tmp\n")
-        sb.append("${CharMulInt(' ', maxlen - dashes - rightIndent)}${CharMulInt('-', dashes)}\n")
+        sb.append("${" ".repeat(maxlen - tmp.toString().length - rightIndent - 1)}-$tmp\n")
+        sb.append("${" ".repeat(maxlen - dashes - rightIndent)}${"-".repeat(dashes)}\n")
     }
-    sb.append("${CharMulInt(' ', maxlen - (lhv % rhv).toString().length)}${lhv % rhv}")
+    sb.append("${" ".repeat(maxlen - (lhv % rhv).toString().length)}${lhv % rhv}")
     val writer = File(outputName).bufferedWriter()
     writer.write("$sb")
     writer.close()

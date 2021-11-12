@@ -40,7 +40,6 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
     rookOrBishopThreatens(x1, y1, x2, y2, x2, y2) != 0
 
 
-
 /**
  * Простая (2 балла)
  *
