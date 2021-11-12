@@ -451,19 +451,21 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
     val writer = File(outputName).bufferedWriter()
-    if (lines.isEmpty() || lines.all { it == " " || it == "\t" })
+    if (lines.isEmpty() || lines.all { it == " " || it == "\t" || it == "\n" })
         writer.write("<html><body><p></p></body></html>")
     else {
         val sb = StringBuilder()
         val stack = mutableListOf<String>()
         sb.append("<html><body><p>")
-        for (line in lines) {
+        for (j in lines.indices) {
+            val line = lines[j]
             if (line.isEmpty() || line == " " || line == "\t") {
-                if ("$sb".length > 7 && sb.toString().substring(sb.length - 7) == "</p><p>")
-                    continue
-                sb.append("</p>")
-                if (lines.indexOf(line) != lines.size - 1)
-                    sb.append("<p>")
+                if (j < lines.size - 1) {
+                    if (!(lines[j + 1].isEmpty() || lines[j + 1] == " " || lines[j + 1] == "\t"))
+                        sb.append("</p><p>")
+                    else
+                        continue
+                } else break
             }
             var i = 0
             while (i < line.length) {
