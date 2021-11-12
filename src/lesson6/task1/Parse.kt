@@ -171,32 +171,32 @@ fun dateDigitToStr(digital: String): String {
  */
 fun flattenPhoneNumber(phone: String): String {
     val result = mutableListOf<String>()
-    for (element in phone.split("")) {
-        if (element == " " || element == "-" || element == "") {
+    for (element in phone) {
+        if (element == ' ' || element == '-') {
             continue
         } else {
-            result.add(element)
+            result.add(element.toString())
         }
     }
     if ("+" in result && result.indexOf("+") != 0) {
         return ""
     }
-    if (")" in result && result.indexOf("(") == result.indexOf(")") - 1) {
+    if (result.indexOf("(") == result.indexOf(")") - 1) {
         return ""
     } else {
         result.remove("(")
         result.remove(")")
     }
-    try {
-        for (element in result) {
-            if (element == "+") {
-                continue
-            } else {
+    for (element in result) {
+        if (element == "+") {
+            continue
+        } else {
+            try {
                 element.toInt()
+            } catch (e: NumberFormatException) {
+                return ""
             }
         }
-    } catch (e: NumberFormatException) {
-        return ""
     }
     return result.joinToString("")
 }
@@ -213,22 +213,18 @@ fun flattenPhoneNumber(phone: String): String {
  */
 fun bestLongJump(jumps: String): Int {
     val results = mutableListOf<Int>()
-    try {
-        for (element in jumps.split(" ")) {
-            if (element == "-" || element == "%") {
-                continue
-            } else {
+    for (element in jumps.split(" ")) {
+        if (element == "-" || element == "%") {
+            continue
+        } else {
+            try {
                 results.add(element.toInt())
+            } catch (e: NumberFormatException) {
+                return -1
             }
         }
-    } catch (e: NumberFormatException) {
-        return -1
     }
-    return if (results.isEmpty()) {
-        -1
-    } else {
-        results.maxOrNull()!!
-    }
+    return results.maxOrNull() ?: -1
 }
 
 /**
@@ -248,25 +244,21 @@ fun bestHighJump(jumps: String): Int {
     if (jumpsList.size % 2 != 0) {
         return -1
     }
-    try {
-        for (i in jumpsList.indices step 2) {
-            if ("+" in jumpsList[i + 1]) {
+    for (i in jumpsList.indices step 2) {
+        if ("+" in jumpsList[i + 1]) {
+            try {
                 results[jumpsList[i].toInt()] = true
-            } else if ("%" in jumpsList[i + 1] || "-" in jumpsList[i + 1]) {
-                results[jumpsList[i].toInt()] = false
-            } else {
+            } catch (e: NumberFormatException) {
                 return -1
             }
+        } else if ("%" in jumpsList[i + 1] || "-" in jumpsList[i + 1]) {
+            continue
+        } else {
+            return -1
         }
-    } catch (e: NumberFormatException) {
-        return -1
     }
 
-    return if (results.isEmpty()) {
-        -1
-    } else {
-        results.filterValues { value -> value }.keys.maxOrNull()!!
-    }
+    return results.keys.maxOrNull() ?: -1
 }
 
 /**
@@ -317,19 +309,21 @@ fun plusMinus(expression: String): Int {
 fun firstDuplicateIndex(str: String): Int {
     val words = str.split(" ")
     var result = 0
-    if (words.size <= 2) {
+    if (words.size == 1) {
         return -1
+    } else if (words.size == 2 && words[0] != words[1]) {
+        return -1
+    } else if (words.size == 2 && words[0] == words[1]){
+        return 0
     }
     for (i in 0..(words.size - 2)) {
-        println(words[i])
         if (words[i].lowercase() == words[i + 1].lowercase()) {
-            result += 1
-            break
+            return result
         } else {
             result += words[i].length + 1
         }
     }
-    return result - 1 // отнимаем единицу, т.к. в списке индексы начинаются с нуля
+    return -1
 }
 
 /**
@@ -364,7 +358,7 @@ fun mostExpensive(description: String): String {
         return ""
     }
 
-    return result[result.maxOf{ it.key }]!!
+    return result.maxByOrNull { it.key }?.value ?: ""
 }
 
 /**
