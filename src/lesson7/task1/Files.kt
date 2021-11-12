@@ -448,87 +448,90 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
     val writer = File(outputName).bufferedWriter()
     val input = mutableListOf<String>()
-    var k = 0
-    while (lines[k].isMarkdownEmpty()) k++
-    while (k < lines.size - 1) {
-        if (!(lines[k].isMarkdownEmpty() && lines[k + 1].isMarkdownEmpty()))
-            input.add(lines[k])
-        k++
-    }
-    if (!(lines[k].isMarkdownEmpty())) input.add(lines[k])
     val sb = StringBuilder()
     val stack = mutableListOf<String>()
+
     sb.append("<html><body><p>")
-    for (line in input) {
-        if (line.isMarkdownEmpty()) {
-            sb.append("</p><p>")
-            continue
+    if (lines.isNotEmpty()) {
+        var k = 0
+        while (k < lines.size && lines[k].isMarkdownEmpty()) k++
+        while (k < lines.size - 1) {
+            if (!(lines[k].isMarkdownEmpty() && lines[k + 1].isMarkdownEmpty()))
+                input.add(lines[k])
+            k++
         }
-        var i = 0
-        while (i < line.length) {
-            when (line[i]) {
-                '~' -> {
-                    if (i < line.length - 1 && line[i + 1] == '~') {
-                        if ("~~" in stack) {
-                            stack.remove("~~")
-                            sb.append("</s>")
-                        } else {
-                            stack.add("~~")
-                            sb.append("<s>")
-                        }
-                        i += 2
-                    }
-                }
-                '*' -> {
-                    if (i < line.length - 1 && line[i + 1] == '*') {
-                        if (i < line.length - 2 && line[i + 2] == '*') {
-                            i += 3
-                            if ("*" in stack) {
-                                if ("**" in stack) {
-                                    if (stack.indexOf("**") > stack.indexOf("*"))
-                                        sb.append("</b></i>")
-                                    else
-                                        sb.append("</i></b>")
-                                    stack.remove("*")
-                                    stack.remove("**")
-                                } else {
-                                    stack.remove("*")
-                                    stack.add("**")
-                                    sb.append("</i><b>") // <--
-                                }
-                            } else if ("**" in stack) {
-                                stack.remove("**")
-                                stack.add("*")
-                                sb.append("</b><i>")
+        if (!(lines[k].isMarkdownEmpty())) input.add(lines[k])
+        for (line in input) {
+            if (line.isMarkdownEmpty()) {
+                sb.append("</p><p>")
+                continue
+            }
+            var i = 0
+            while (i < line.length) {
+                when (line[i]) {
+                    '~' -> {
+                        if (i < line.length - 1 && line[i + 1] == '~') {
+                            if ("~~" in stack) {
+                                stack.remove("~~")
+                                sb.append("</s>")
                             } else {
-                                stack.add("**")
-                                stack.add("*")
-                                sb.append("<b><i>")
+                                stack.add("~~")
+                                sb.append("<s>")
                             }
-                        } else {
                             i += 2
-                            if ("**" in stack) {
-                                stack.remove("**")
-                                sb.append("</b>")
-                            } else {
-                                stack.add("**")
-                                sb.append("<b>")
-                            }
-                        }
-                    } else {
-                        i++
-                        if ("*" in stack) {
-                            stack.remove("*")
-                            sb.append("</i>")
-                        } else {
-                            stack.add("*")
-                            sb.append("<i>")
                         }
                     }
-                }
-                else -> {
-                    sb.append(line[i])
-                    i++
+                    '*' -> {
+                        if (i < line.length - 1 && line[i + 1] == '*') {
+                            if (i < line.length - 2 && line[i + 2] == '*') {
+                                i += 3
+                                if ("*" in stack) {
+                                    if ("**" in stack) {
+                                        if (stack.indexOf("**") > stack.indexOf("*"))
+                                            sb.append("</b></i>")
+                                        else
+                                            sb.append("</i></b>")
+                                        stack.remove("*")
+                                        stack.remove("**")
+                                    } else {
+                                        stack.remove("*")
+                                        stack.add("**")
+                                        sb.append("</i><b>") // <--
+                                    }
+                                } else if ("**" in stack) {
+                                    stack.remove("**")
+                                    stack.add("*")
+                                    sb.append("</b><i>")
+                                } else {
+                                    stack.add("**")
+                                    stack.add("*")
+                                    sb.append("<b><i>")
+                                }
+                            } else {
+                                i += 2
+                                if ("**" in stack) {
+                                    stack.remove("**")
+                                    sb.append("</b>")
+                                } else {
+                                    stack.add("**")
+                                    sb.append("<b>")
+                                }
+                            }
+                        } else {
+                            i++
+                            if ("*" in stack) {
+                                stack.remove("*")
+                                sb.append("</i>")
+                            } else {
+                                stack.add("*")
+                                sb.append("<i>")
+                            }
+                        }
+                    }
+                    else -> {
+                        sb.append(line[i])
+                        i++
+                    }
                 }
             }
         }
