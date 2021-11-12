@@ -452,7 +452,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val stack = mutableListOf<String>()
 
     sb.append("<html><body><p>")
-    if (lines.isNotEmpty() && lines.any { it.isMarkdownEmpty() }) {
+    if (lines.isNotEmpty() || !(lines.all { it.isMarkdownEmpty() })) {
         var k = 0
         while (k < lines.size && lines[k].isMarkdownEmpty()) k++
         while (k < lines.size - 1) {
