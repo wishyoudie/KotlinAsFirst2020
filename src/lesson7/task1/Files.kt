@@ -4,7 +4,6 @@ package lesson7.task1
 
 import lesson4.task1.convert
 import java.io.File
-import kotlin.math.PI
 import kotlin.math.floor
 import kotlin.math.max
 
