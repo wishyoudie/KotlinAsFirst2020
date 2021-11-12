@@ -601,7 +601,144 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
-    TODO()
+    val rawInput = File(inputName).readLines()
+    val trimmedInput = mutableListOf<String>()
+    val writer = File(outputName).bufferedWriter()
+
+    writer.write("<html><body>")
+    if (rawInput.isNotEmpty() || !(rawInput.all { it.isMarkdownEmpty() })) {
+        val sb = StringBuilder()
+        val listStack = mutableListOf<String>()
+        val textStack = mutableListOf<String>()
+        val digits = "0123456789"
+        var k = 0
+
+        while (k < rawInput.size && rawInput[k].isMarkdownEmpty()) k++
+        while (k < rawInput.size - 1) {
+            if (!(rawInput[k].isMarkdownEmpty() && rawInput[k + 1].isMarkdownEmpty()))
+                trimmedInput.add(rawInput[k])
+            k++
+        }
+        if (!(rawInput[k].isMarkdownEmpty()))
+            trimmedInput.add(rawInput[k])
+
+        sb.append("<p>")
+        for (line in trimmedInput) {
+            if (line.isMarkdownEmpty()) {
+                sb.append("</p><p>")
+                continue
+            }
+            var i = 0
+            while (line[i] == ' ') i++
+            if (i % 4 == 0) {
+                if (i > 4 * (listStack.size - 1)) {
+                    when (line[i]) {
+                        '*' -> {
+                            sb.append("<ul><li>")
+                            listStack.add("ul")
+                        }
+                        in digits -> {
+                            sb.append("<ol><li>")
+                            listStack.add("ol")
+                        }
+                        else -> {
+                            i--
+                        }
+                    }
+                } else if (i < 4 * (listStack.size - 1)) {
+                    sb.append("</li></${listStack.pop()}></li><li>")
+                } else {
+                    when (line[i]) {
+                        '*' -> {
+                            sb.append("</li><li>")
+                        }
+                        in digits -> {
+                            sb.append("</li><li>")
+                        }
+                        else -> {
+                            // pass
+                        }
+                    }
+                }
+            }
+            i++
+            while (line[i] in digits || line[i] == ' ' || line[i] == '.') i++
+            while (i < line.length) {
+                when (line[i]) {
+                    '~' -> {
+                        if (i < line.length - 1 && line[i + 1] == '~') {
+                            if ("~~" in textStack) {
+                                textStack.remove("~~")
+                                sb.append("</s>")
+                            } else {
+                                textStack.add("~~")
+                                sb.append("<s>")
+                            }
+                            i += 2
+                        }
+                    }
+                    '*' -> {
+                        if (i < line.length - 1 && line[i + 1] == '*') {
+                            if (i < line.length - 2 && line[i + 2] == '*') {
+                                i += 3
+                                if ("*" in textStack) {
+                                    if ("**" in textStack) {
+                                        if (textStack.indexOf("**") > textStack.indexOf("*"))
+                                            sb.append("</b></i>")
+                                        else
+                                            sb.append("</i></b>")
+                                        textStack.remove("*")
+                                        textStack.remove("**")
+                                    } else {
+                                        textStack.remove("*")
+                                        textStack.add("**")
+                                        sb.append("</i><b>") // <--
+                                    }
+                                } else if ("**" in textStack) {
+                                    textStack.remove("**")
+                                    textStack.add("*")
+                                    sb.append("</b><i>")
+                                } else {
+                                    textStack.add("**")
+                                    textStack.add("*")
+                                    sb.append("<b><i>")
+                                }
+                            } else {
+                                i += 2
+                                if ("**" in textStack) {
+                                    textStack.remove("**")
+                                    sb.append("</b>")
+                                } else {
+                                    textStack.add("**")
+                                    sb.append("<b>")
+                                }
+                            }
+                        } else {
+                            i++
+                            if ("*" in textStack) {
+                                textStack.remove("*")
+                                sb.append("</i>")
+                            } else {
+                                textStack.add("*")
+                                sb.append("<i>")
+                            }
+                        }
+                    }
+                    else -> {
+                        sb.append(line[i])
+                        i++
+                    }
+                }
+            }
+        }
+        while (listStack.size != 0) {
+            sb.append("</li></${listStack.pop()}>")
+        }
+        sb.append("</p>")
+        writer.write("$sb")
+    }
+    writer.write("</body></html>")
+    writer.close()
 }
 
 /**
