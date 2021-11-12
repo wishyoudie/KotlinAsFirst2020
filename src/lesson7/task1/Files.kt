@@ -449,23 +449,28 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
  * Отдельно следует заметить, что открывающая последовательность из трёх звёздочек (***) должна трактоваться как "<b><i>"
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
+    fun String.isMarkdownEmpty(): Boolean = this.isEmpty() || this == " " || this == "\t"
+
     val lines = File(inputName).readLines()
     val writer = File(outputName).bufferedWriter()
     if (lines.isEmpty() || lines.all { it == " " || it == "\t" || it == "\n" })
         writer.write("<html><body><p></p></body></html>")
     else {
+        val input = mutableListOf<String>()
+        var k = 0
+        while (lines[k].isMarkdownEmpty()) k++
+        while (k < lines.size - 1) {
+            if (!(lines[k].isMarkdownEmpty() && lines[k + 1].isMarkdownEmpty())) input.add(lines[k])
+            k++
+        }
+        input.add(lines[k])
         val sb = StringBuilder()
         val stack = mutableListOf<String>()
         sb.append("<html><body><p>")
-        for (j in lines.indices) {
-            val line = lines[j]
-            if (line.isEmpty() || line == " " || line == "\t") {
-                if (j < lines.size - 1) {
-                    if (!(lines[j + 1].isEmpty() || lines[j + 1] == " " || lines[j + 1] == "\t"))
-                        sb.append("</p><p>")
-                    else
-                        continue
-                } else break
+        for (line in input) {
+            if (line.isMarkdownEmpty()) {
+                sb.append("</p><p>")
+                continue
             }
             var i = 0
             while (i < line.length) {
