@@ -4,6 +4,7 @@ package lesson7.task1
 
 import lesson4.task1.convert
 import java.io.File
+import kotlin.math.PI
 import kotlin.math.floor
 import kotlin.math.max
 
@@ -433,155 +434,159 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     writer.close()
 }
 
+fun String.isMarkdownEmpty(): Boolean = this.isEmpty() || this.all { it == ' ' || it == '\t' }
+fun MutableList<String>.pop(): String {
+    val last = this.last()
+    this.removeLast()
+    return last
+}
+
 /**
  * Сложная (22 балла)
- * - *текст в курсивном начертании* -- курсив
- * - **текст в полужирном начертании** -- полужирный
- * - ~~зачёркнутый текст~~ -- зачёркивание
- *
- * Следует вывести в выходной файл этот же текст в формате HTML:
- * - <i>текст в курсивном начертании</i>
- * - <b>текст в полужирном начертании</b>
- * - <s>зачёркнутый текст</s>
- *
- * Кроме того, все абзацы исходного текста, отделённые друг от друга пустыми строками, следует обернуть в теги <p>...</p>,
- * а весь текст целиком в теги <html><body>...</body></html>.
- * Отдельно следует заметить, что открывающая последовательность из трёх звёздочек (***) должна трактоваться как "<b><i>"
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    fun String.isMarkdownEmpty(): Boolean = this.isEmpty() || this == " " || this == "\t"
-
     val lines = File(inputName).readLines()
-    try {
-        val writer = File(outputName).bufferedWriter()
-        if (lines.isEmpty() || lines.all { it == " " || it == "\t" || it == "\n" })
-            writer.write("<html><body><p></p></body></html>")
-        else {
-            val input = mutableListOf<String>()
-            var k = 0
-            while (lines[k].isMarkdownEmpty()) k++
-            while (k < lines.size - 1) {
-                if (!(lines[k].isMarkdownEmpty() && lines[k + 1].isMarkdownEmpty()))
-                    input.add(lines[k])
-                k++
-            }
-            if (!(lines[k].isMarkdownEmpty())) input.add(lines[k])
-            val sb = StringBuilder()
-            val stack = mutableListOf<String>()
-            sb.append("<html><body><p>")
-            for (line in input) {
-                if (line.isMarkdownEmpty()) {
-                    sb.append("</p><p>")
-                    continue
+    val writer = File(outputName).bufferedWriter()
+    val input = mutableListOf<String>()
+    var k = 0
+    while (lines[k].isMarkdownEmpty()) k++
+    while (k < lines.size - 1) {
+        if (!(lines[k].isMarkdownEmpty() && lines[k + 1].isMarkdownEmpty()))
+            input.add(lines[k])
+        k++
+    }
+    if (!(lines[k].isMarkdownEmpty())) input.add(lines[k])
+    val sb = StringBuilder()
+    val stack = mutableListOf<String>()
+    sb.append("<html><body><p>")
+    for (line in input) {
+        if (line.isMarkdownEmpty()) {
+            sb.append("</p><p>")
+            continue
+        }
+        var i = 0
+        while (i < line.length) {
+            when (line[i]) {
+                '~' -> {
+                    if (i < line.length - 1 && line[i + 1] == '~') {
+                        if ("~~" in stack) {
+                            stack.remove("~~")
+                            sb.append("</s>")
+                        } else {
+                            stack.add("~~")
+                            sb.append("<s>")
+                        }
+                        i += 2
+                    }
                 }
-                var i = 0
-                while (i < line.length) {
-                    when (line[i]) {
-                        '~' -> {
-                            if (i < line.length - 1 && line[i + 1] == '~') {
-                                if ("~~" in stack) {
-                                    stack.remove("~~")
-                                    sb.append("</s>")
-                                } else {
-                                    stack.add("~~")
-                                    sb.append("<s>")
-                                }
-                                i += 2
-                            }
-                        }
-                        '*' -> {
-                            if (i < line.length - 1 && line[i + 1] == '*') {
-                                if (i < line.length - 2 && line[i + 2] == '*') {
-                                    i += 3
-                                    if ("*" in stack) {
-                                        if ("**" in stack) {
-                                            if (stack.indexOf("**") > stack.indexOf("*"))
-                                                sb.append("</b></i>")
-                                            else
-                                                sb.append("</i></b>")
-                                            stack.remove("*")
-                                            stack.remove("**")
-                                        } else {
-                                            stack.remove("*")
-                                            stack.add("**")
-                                            sb.append("</i><b>") // <--
-                                        }
-                                    } else if ("**" in stack) {
-                                        stack.remove("**")
-                                        stack.add("*")
-                                        sb.append("</b><i>")
-                                    } else {
-                                        stack.add("**")
-                                        stack.add("*")
-                                        sb.append("<b><i>")
-                                    }
-                                } else {
-                                    i += 2
-                                    if ("**" in stack) {
-                                        stack.remove("**")
-                                        sb.append("</b>")
-                                    } else {
-                                        stack.add("**")
-                                        sb.append("<b>")
-                                    }
-                                }
-                            } else {
-                                i++
-                                if ("*" in stack) {
+                '*' -> {
+                    if (i < line.length - 1 && line[i + 1] == '*') {
+                        if (i < line.length - 2 && line[i + 2] == '*') {
+                            i += 3
+                            if ("*" in stack) {
+                                if ("**" in stack) {
+                                    if (stack.indexOf("**") > stack.indexOf("*"))
+                                        sb.append("</b></i>")
+                                    else
+                                        sb.append("</i></b>")
                                     stack.remove("*")
-                                    sb.append("</i>")
+                                    stack.remove("**")
                                 } else {
-                                    stack.add("*")
-                                    sb.append("<i>")
+                                    stack.remove("*")
+                                    stack.add("**")
+                                    sb.append("</i><b>") // <--
                                 }
+                            } else if ("**" in stack) {
+                                stack.remove("**")
+                                stack.add("*")
+                                sb.append("</b><i>")
+                            } else {
+                                stack.add("**")
+                                stack.add("*")
+                                sb.append("<b><i>")
+                            }
+                        } else {
+                            i += 2
+                            if ("**" in stack) {
+                                stack.remove("**")
+                                sb.append("</b>")
+                            } else {
+                                stack.add("**")
+                                sb.append("<b>")
                             }
                         }
-                        else -> {
-                            sb.append(line[i])
-                            i++
+                    } else {
+                        i++
+                        if ("*" in stack) {
+                            stack.remove("*")
+                            sb.append("</i>")
+                        } else {
+                            stack.add("*")
+                            sb.append("<i>")
                         }
                     }
                 }
+                else -> {
+                    sb.append(line[i])
+                    i++
+                }
             }
-            sb.append("</p></body></html>")
-            writer.write("$sb")
         }
-        writer.close()
-    } catch (e: IndexOutOfBoundsException) {
-        throw IndexOutOfBoundsException("$lines")
     }
+    sb.append("</p></body></html>")
+    writer.write("$sb")
+    writer.close()
 }
 
 /**
  * Сложная (23 балла)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    /*
-    fun countIndent(str: String): Int {
-        var res = 0
-        while (str[res++] == ' ') {
-        }
-        return res - 1
-    }
-
     val lines = File(inputName).readLines()
     val writer = File(outputName).bufferedWriter()
-    if (lines.isEmpty())
-        writer.write("<html><body><p></p></body></html>")
-    else {
+    val sb = StringBuilder()
+    sb.append("<html><body><p>")
+    if (lines.isNotEmpty()) {
+        val digits = "0123456789."
         val stack = mutableListOf<String>()
-        val sb = StringBuilder()
-        var prevIndent = 0
-        sb.append("<html><body><p>")
-        for (i in lines.indices) {
-            val currentIndent = countIndent(lines[i])
-
+        var k = 0
+        stack.add(if (lines[0][k] == '*') "ul" else "ol")
+        while (lines[0][k] in digits || lines[0][k] == ' ' || lines[0][k] == '*') k++
+        sb.append("<${stack.last()}><li>${lines[0].substring(k)}")
+        for (l in 1 until lines.size) {
+            val line = lines[l]
+            if (line.isMarkdownEmpty()) continue
+            var first = 0
+            while (line[first] == ' ') first++
+            if (first > 4 * (stack.size - 1)) {
+                stack.add(
+                    when (line[first]) {
+                        '*' -> {
+                            sb.append("<ul>")
+                            "ul"
+                        }
+                        in digits -> {
+                            sb.append("<ol>")
+                            "ol"
+                        }
+                        else -> throw IllegalArgumentException("Bad line format in '$line' with ${line[first]}")
+                    }
+                )
+            } else if (first < 4 * (stack.size - 1)) {
+                sb.append("</li></${stack.pop()}></li>")
+            } else {
+                sb.append("</li>")
+            }
+            while (line[first] in digits || line[first] == ' ' || line[first] == '.' || line[first] == '*') first++
+            sb.append("<li>${line.substring(first)}")
         }
-        sb.append("</p></body></html>")
-        writer.write("$sb")
+        while (stack.size != 0) {
+            sb.append("</li></${stack.pop()}>")
+        }
     }
-    writer.close()*/
-    TODO()
+    sb.append("</p></body></html>")
+    writer.write("$sb")
+    writer.close()
 }
 
 /**
