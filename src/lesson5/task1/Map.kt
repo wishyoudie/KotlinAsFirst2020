@@ -369,6 +369,7 @@ fun hasAnagrams(words: List<String>): Boolean {
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, MutableSet<String>>()
     val allNames = mutableSetOf<String>()
+    var valueToAdd = mutableSetOf<String>()
     for ((first, second) in friends) { // добавляю все возможные имена в список allNames
         allNames.add(first)
         for (element in second) {
@@ -384,9 +385,11 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
         val oldResult = result
         for ((first, second) in result) {
             for (element in second) {
-                result[first] = second.union(result[element] ?: mutableSetOf()) as MutableSet<String>
-                result[first]?.removeIf { it == first }
+                valueToAdd += second + result[element]!!
             }
+            valueToAdd.removeIf { it == first }
+            result[first] = valueToAdd
+            valueToAdd = mutableSetOf()
         }
 
     } while (oldResult != result)
