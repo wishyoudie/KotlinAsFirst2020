@@ -2,6 +2,9 @@
 
 package lesson11.task1
 
+import kotlin.math.abs
+import kotlin.math.pow
+
 /**
  * Класс "полином с вещественными коэффициентами".
  *
@@ -20,16 +23,23 @@ package lesson11.task1
  * Старшие коэффициенты, равные нулю, игнорировать, например Polynom(0.0, 0.0, 5.0, 3.0) соответствует 5x+3
  */
 class Polynom(vararg coeffs: Double) {
+    private constructor(c: MutableList<Double>) : this(*c.toDoubleArray())
+
+    private val c = coeffs.toList()
 
     /**
      * Геттер: вернуть значение коэффициента при x^i
      */
-    fun coeff(i: Int): Double = TODO()
+    fun coeff(i: Int): Double = c[c.size - i - 1]
 
     /**
      * Расчёт значения при заданном x
      */
-    fun getValue(x: Double): Double = TODO()
+    fun getValue(x: Double): Double {
+        var res = 0.0
+        for (i in c.indices) res += c[i] * x.pow(c.size - 1 - i)
+        return res
+    }
 
     /**
      * Степень (максимальная степень x при ненулевом слагаемом, например 2 для x^2+x+1).
@@ -38,22 +48,37 @@ class Polynom(vararg coeffs: Double) {
      * Слагаемые с нулевыми коэффициентами игнорировать, т.е.
      * степень 0x^2+0x+2 также равна 0.
      */
-    fun degree(): Int = TODO()
+    fun degree(): Int {
+        for (d in c.indices) if (c[d] != 0.0) return c.size - 1 - d
+        return 0
+    }
 
     /**
      * Сложение
      */
-    operator fun plus(other: Polynom): Polynom = TODO()
+    operator fun plus(other: Polynom): Polynom {
+        val diff = this.c.size - other.c.size
+        val bigger = if (diff >= 0) this.c else other.c
+        val smaller = if (diff < 0) this.c else other.c
+        val newc = mutableListOf<Double>()
+        for (i in 0 until abs(diff)) newc.add(bigger[i])
+        for (i in 0 until bigger.size - abs(diff)) newc.add(bigger[i + abs(diff)] + smaller[i])
+        return Polynom(newc)
+    }
 
     /**
      * Смена знака (при всех слагаемых)
      */
-    operator fun unaryMinus(): Polynom = TODO()
+    operator fun unaryMinus(): Polynom {
+        val newc = mutableListOf<Double>()
+        for (t in c) newc.add(-t)
+        return Polynom(newc)
+    }
 
     /**
      * Вычитание
      */
-    operator fun minus(other: Polynom): Polynom = TODO()
+    operator fun minus(other: Polynom): Polynom = this + other.unaryMinus()
 
     /**
      * Умножение
@@ -78,10 +103,11 @@ class Polynom(vararg coeffs: Double) {
     /**
      * Сравнение на равенство
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean = other is Polynom &&
+            (this - other).c.all { it == 0.0 }
 
     /**
      * Получение хеш-кода
      */
-    override fun hashCode(): Int = TODO()
+    override fun hashCode(): Int = this.c.hashCode()
 }
