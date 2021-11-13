@@ -481,7 +481,38 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
     fun getState() = this.state.toString()
     fun getHistory() = this.history
 
-    private fun heuristic(): Int {
+    private fun manhattan(): Int {
+        var res = 0
+        for (i in 0 until 16) if (state[i] != 0) res += calculateDistance((this.state[i] - 1) % 16, i)
+        return res
+    }
+
+    private fun linear(): Int {
+        var res = 0
+        for (row in 0 until 4) {
+            val r = row * 4
+            for (i in 0 until 3)
+                for (j in i + 1 until 4) {
+                    if ((this.state[i + r] - 1) / 4 == row && (this.state[j + r] - 1) / 4 == row && this.state[i + r] > this.state[j + r]) {
+                        res++
+                    }
+                }
+        }
+        for (col in 0 until 4) {
+            for (i in 0 until 3) {
+                val qi = 4 * i
+                for (j in i + 1 until 4) {
+                    val qj = 4 * j
+                    if ((this.state[qi + col] - 1) % 4 == col && (this.state[qj + col] - 1) % 4 == col && this.state[qi + col] > this.state[qj + col]) {
+                        res++
+                    }
+                }
+            }
+        }
+        return 2 * res
+    }
+
+    /*private fun heuristic(): Int {
         val row = listOf(3, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3)
         val col = listOf(3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2)
         var res = 0
@@ -489,10 +520,11 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
             if (state[i] != 0)
                 res += abs(row[state[i]] - i / 4) + abs(col[state[i]] - i % 4)
         return res
-    }
+    }*/
 
+    fun h() = manhattan() + linear()
     fun g() = history.size
-    fun f() = g() + heuristic()
+    fun f() = g() + h()
 
     fun getNeighbours(): List<Chain> {
         val neighs = mutableListOf<Chain>()

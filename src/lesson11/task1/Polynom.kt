@@ -83,7 +83,32 @@ class Polynom(vararg coeffs: Double) {
     /**
      * Умножение
      */
-    operator fun times(other: Polynom): Polynom = TODO()
+    operator fun times(other: Polynom): Polynom {
+        val left = mutableListOf<Double>()
+        val right = mutableListOf<Double>()
+        val res = mutableListOf<Double>()
+        val resdeg = (this.c.size - 1) * (other.c.size - 1)
+
+        for (i in 0 until resdeg) {
+            res.add(0.0)
+            if (i < this.c.size)
+                left.add(this.c[i])
+            else
+                left.add(0.0)
+            if (i < other.c.size)
+                right.add(other.c[i])
+            else
+                right.add(0.0)
+        }
+        for (i in res.indices) {
+            var s = 0.0
+            for (r in i downTo 0) {
+                s += right[r] * left[i - r]
+            }
+            res[i] = s
+        }
+        return Polynom(res)
+    }
 
     /**
      * Деление
