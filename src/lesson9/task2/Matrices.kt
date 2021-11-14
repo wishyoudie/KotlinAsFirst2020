@@ -511,10 +511,10 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
         return 2 * res
     }
 
-    fun h() = manhattan() + linear()
-    val heur = h()
+    private val h = manhattan() + linear()
+    fun h() = h
     fun g() = history.size
-    fun f() = g() + heur
+    fun f() = g() + h()
 
     fun getNeighbours(): List<Chain> {
         val neighs = mutableListOf<Chain>()
@@ -551,7 +551,7 @@ fun a_star(start: Chain): Chain {
     while (chainHeap.isNotEmpty()) {
         val currentChain = chainHeap.poll()
         val currentNode = currentChain.getState()
-        if (currentChain.heur == 0)
+        if (currentChain.h() == 0)
             return currentChain
         nodes[currentNode] = currentChain.g()
         for (ch in currentChain.getNeighbours()) {
