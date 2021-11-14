@@ -476,58 +476,40 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
 
 fun calculateDistance(a: Int, b: Int) = abs(a % 4 - b % 4) + abs(a / 4 - b / 4)
 
-class Chain(private val state: List<Int>, private val history: List<Int> = listOf<Int>()) {
+class Chain(private val state: List<Int>, private val history: List<Int> = listOf()) {
 
-    fun getState() = this.state.toString()
-    fun getHistory() = this.history
+    fun getState() = state
+    fun getHistory() = history
 
-    fun manhattan(): Int {
+    private fun manhattan(): Int {
         var res = 0
-        for (i in 0 until 16) if (state[i] != 0) res += calculateDistance((this.state[i] - 1) % 16, i)
+        for (i in 0 until 16) if (state[i] != 0) res += calculateDistance((state[i] - 1) % 16, i)
         return res
     }
 
-    fun linear(): Int {
+    private fun linear(): Int {
         var res = 0
         for (row in 0 until 4) {
             val r = row * 4
             for (i in 0 until 3) {
-                if (this.state[i + r] == 0) continue
+                if (state[i + r] == 0) continue
                 for (j in i + 1 until 4) {
-                    if (this.state[j + r] == 0) continue
-                    if ((this.state[i + r] - 1) / 4 == row && (this.state[j + r] - 1) / 4 == row && this.state[i + r] > this.state[j + r]) {
-                        res++
-                        //println("Row: ${this.state[i + r]} ${this.state[j + r]}")
-                    }
+                    if (state[j + r] != 0 && (state[i + r] - 1) / 4 == row && (state[j + r] - 1) / 4 == row && state[i + r] > state[j + r]) res++
                 }
             }
         }
         for (col in 0 until 4) {
             for (i in 0 until 3) {
                 val qi = 4 * i
-                if (this.state[qi + col] == 0) continue
+                if (state[qi + col] == 0) continue
                 for (j in i + 1 until 4) {
                     val qj = 4 * j
-                    if (this.state[qj + col] == 0) continue
-                    if ((this.state[qi + col] - 1) % 4 == col && (this.state[qj + col] - 1) % 4 == col && this.state[qi + col] > this.state[qj + col]) {
-                        res++
-                        //println("Col: ${this.state[qi + col]} ${this.state[qj + col]}")
-                    }
+                    if (state[qj + col] != 0 && (state[qi + col] - 1) % 4 == col && (state[qj + col] - 1) % 4 == col && state[qi + col] > state[qj + col]) res++
                 }
             }
         }
         return 2 * res
     }
-
-    /*fun heuristic(): Int {
-        val row = listOf(3, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3)
-        val col = listOf(3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2)
-        var res = 0
-        for (i in 0 until 16)
-            if (state[i] != 0)
-                res += abs(row[state[i]] - i / 4) + abs(col[state[i]] - i % 4)
-        return res
-    }*/
 
     fun h() = manhattan() + linear()
     fun g() = history.size
@@ -540,46 +522,33 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
         if (zero_coord < 15 && calculateDistance(zero_coord, zero_coord + 1) == 1) {
             val new_state = state.toMutableList()
             new_state[zero_coord + 1] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord + 1] }
-            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+            neighs.add(Chain(new_state, history + new_state[zero_coord]))
         }
 
         if (zero_coord >= 1 && calculateDistance(zero_coord, zero_coord - 1) == 1) {
             val new_state = state.toMutableList()
             new_state[zero_coord - 1] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord - 1] }
-            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+            neighs.add(Chain(new_state, history + new_state[zero_coord]))
         }
 
         if (zero_coord < 12 && calculateDistance(zero_coord, zero_coord + 4) == 1) {
             val new_state = state.toMutableList()
             new_state[zero_coord + 4] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord + 4] }
-            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+            neighs.add(Chain(new_state, history + new_state[zero_coord]))
         }
         if (zero_coord >= 4 && calculateDistance(zero_coord, zero_coord - 4) == 1) {
             val new_state = state.toMutableList()
             new_state[zero_coord - 4] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord - 4] }
-            neighs.add(Chain(new_state, this.history + new_state[zero_coord]))
+            neighs.add(Chain(new_state, history + new_state[zero_coord]))
         }
         return neighs
     }
-
-    override fun toString(): String {
-        var i = 0
-        val sb = StringBuilder()
-        while (i < 16) {
-            sb.append("${state[i]}  ")
-            if (i % 4 == 3) {
-                sb.append("\n")
-            }
-            i++
-        }
-        return "$sb"
-    }
 }
 
-fun a_star(start: Chain, finish: Chain): Chain {
-    val nodes = mutableMapOf<String, Int>()
+fun a_star(start: Chain): Chain {
+    val nodes = mutableMapOf<List<Int>, Int>()
     val chainHeap = PriorityQueue<Chain>(compareBy { it.f() })
-    val goal = finish.getState()
+    val goal = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
 
     chainHeap.add(start)
     while (chainHeap.isNotEmpty()) {
@@ -605,7 +574,6 @@ fun a_star(start: Chain, finish: Chain): Chain {
  */
 fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     if (matrix.width != 4 || matrix.height != 4) throw IllegalArgumentException("Not 4x4 matrix")
-
     val input = matrix.toList()
     var n = input.indexOf(0) / 4 + 1
     for (i in 1..15) {
@@ -616,8 +584,7 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
         n += k
     }
     if (n % 2 != 0) input[input.indexOf(14)] = 15.also { input[input.indexOf(15)] = 14 }
-    val result = a_star(Chain(input), Chain(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0))).getHistory()
-        .toMutableList()
+    val result = a_star(Chain(input)).getHistory().toMutableList()
     if (n % 2 != 0)
         for (i in result.indices)
             when (result[i]) {
