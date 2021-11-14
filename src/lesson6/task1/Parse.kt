@@ -178,7 +178,7 @@ fun flattenPhoneNumber(phone: String): String {
             result.add(element.toString())
         }
     }
-    if ("+" in result && result.indexOf("+") != 0) {
+    if ("+" in result && result.indexOf("+") != 0 || result.count { it == "+" } > 1) {
         return ""
     }
     if (result.indexOf("(") == result.indexOf(")") - 1) {
@@ -239,7 +239,7 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
-    val results = mutableMapOf<Int, Boolean>()
+    var result = 0
     val jumpsList = jumps.split(" ")
     if (jumpsList.size % 2 != 0) {
         return -1
@@ -247,7 +247,9 @@ fun bestHighJump(jumps: String): Int {
     for (i in jumpsList.indices step 2) {
         if ("+" in jumpsList[i + 1]) {
             try {
-                results[jumpsList[i].toInt()] = true
+                if (jumpsList[i].toInt() > result) {
+                    result = jumpsList[i].toInt()
+                }
             } catch (e: NumberFormatException) {
                 return -1
             }
@@ -258,7 +260,7 @@ fun bestHighJump(jumps: String): Int {
         }
     }
 
-    return results.keys.maxOrNull() ?: -1
+    return result
 }
 
 /**
@@ -278,8 +280,11 @@ fun plusMinus(expression: String): Int {
     if (expressionList.size % 2 == 0) {
         throw java.lang.IllegalArgumentException()
     }
-
-    var result = expressionList[0].toInt()
+    var result = try {
+        expressionList[0].toInt()
+    } catch (e: NumberFormatException) {
+        throw java.lang.IllegalArgumentException()
+    }
     try {
         for (i in 2 until expressionList.size step 2) {
             if (expressionList[i - 1] == "+" && "+" !in expressionList[i] && "-" !in expressionList[i]) {
@@ -313,7 +318,7 @@ fun firstDuplicateIndex(str: String): Int {
         return -1
     } else if (words.size == 2 && words[0] != words[1]) {
         return -1
-    } else if (words.size == 2 && words[0] == words[1]){
+    } else if (words.size == 2 && words[0] == words[1]) {
         return 0
     }
     for (i in 0..(words.size - 2)) {
