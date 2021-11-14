@@ -512,8 +512,9 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
     }
 
     fun h() = manhattan() + linear()
+    val heur = h()
     fun g() = history.size
-    fun f() = g() + h()
+    fun f() = g() + heur
 
     fun getNeighbours(): List<Chain> {
         val neighs = mutableListOf<Chain>()
@@ -524,13 +525,11 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
             new_state[zero_coord + 1] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord + 1] }
             neighs.add(Chain(new_state, history + new_state[zero_coord]))
         }
-
         if (zero_coord >= 1 && calculateDistance(zero_coord, zero_coord - 1) == 1) {
             val new_state = state.toMutableList()
             new_state[zero_coord - 1] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord - 1] }
             neighs.add(Chain(new_state, history + new_state[zero_coord]))
         }
-
         if (zero_coord < 12 && calculateDistance(zero_coord, zero_coord + 4) == 1) {
             val new_state = state.toMutableList()
             new_state[zero_coord + 4] = new_state[zero_coord].also { new_state[zero_coord] = new_state[zero_coord + 4] }
@@ -548,13 +547,11 @@ class Chain(private val state: List<Int>, private val history: List<Int> = listO
 fun a_star(start: Chain): Chain {
     val nodes = mutableMapOf<List<Int>, Int>()
     val chainHeap = PriorityQueue<Chain>(compareBy { it.f() })
-    val goal = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
-
     chainHeap.add(start)
     while (chainHeap.isNotEmpty()) {
         val currentChain = chainHeap.poll()
         val currentNode = currentChain.getState()
-        if (currentNode == goal)
+        if (currentChain.heur == 0)
             return currentChain
         nodes[currentNode] = currentChain.g()
         for (ch in currentChain.getNeighbours()) {
@@ -583,9 +580,9 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
                 k++
         n += k
     }
-    if (n % 2 != 0) input[input.indexOf(14)] = 15.also { input[input.indexOf(15)] = 14 }
-    val result = a_star(Chain(input)).getHistory().toMutableList()
-    if (n % 2 != 0)
+    return if (n % 2 != 0) {
+        input[input.indexOf(14)] = 15.also { input[input.indexOf(15)] = 14 }
+        val result = a_star(Chain(input)).getHistory().toMutableList()
         for (i in result.indices)
             when (result[i]) {
                 14 -> result[i] = 15
@@ -593,5 +590,8 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
                 else -> {
                 }
             }
-    return result
+        result
+    } else {
+        a_star(Chain(input)).getHistory().toMutableList()
+    }
 }
