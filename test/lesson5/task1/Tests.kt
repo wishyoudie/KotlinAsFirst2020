@@ -317,6 +317,32 @@ class Tests {
                 )
             )
         )
+        assertEquals(
+            mapOf(
+                "0" to setOf(),
+                "1" to setOf(),
+                "c2" to setOf(),
+                "a" to setOf("0", "64", "16", "136", "c2", "1", "a0", "396"),
+                "16" to setOf(),
+                "64" to setOf("16", "136", "c2", "1", "a0", "0", "396", "a"),
+                "a0" to setOf("c2", "0", "396", "136", "1", "64", "a", "16"),
+                "136" to setOf("1"),
+                "396" to setOf("1", "c2", "64", "0", "a0", "16", "136", "a")
+            ),
+            propagateHandshakes(
+                mapOf(
+                    "0" to setOf(),
+                    "1" to setOf(),
+                    "c2" to setOf(),
+                    "a" to setOf("0", "64"),
+                    "16" to setOf(),
+                    "64" to setOf("16", "136", "c2", "1", "a0", "0"),
+                    "a0" to setOf("c2", "0", "396", "136", "1", "64", "a", "16"),
+                    "136" to setOf("1"),
+                    "396" to setOf("1", "c2", "64", "0", "a0")
+                )
+            )
+        )
     }
 
     @Test

@@ -240,20 +240,21 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
     var result = ""
     var minValue = Double.MAX_VALUE
+    var flag = 0
     for ((first, second) in stuff) {
         if (second.first == kind) {
-            if (second.second < minValue) {
+            flag = 1
+            if (second.second <= minValue) {
                 minValue = second.second
                 result = first
             }
         }
     }
-    if (minValue == Double.MAX_VALUE) {
+    if (flag == 0) {
         return null
     } else {
         return result
     }
-
 }
 
 /**
@@ -381,8 +382,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     for (element in allNames) { // добавляю имена и друзей из списка allNames, опираясь на изначальный ассоциативный список
         result[element] = friends[element]?.toMutableSet() ?: mutableSetOf()
     }
-    do { // расширяю список по рукопожатиям
-        val oldResult = result
+    for (i in result.keys.indices) { // расширяю список по рукопожатиям
         for ((first, second) in result) {
             for (element in second) {
                 valueToAdd += second + result[element]!!
@@ -392,7 +392,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
             valueToAdd = mutableSetOf()
         }
 
-    } while (oldResult != result)
+    }
     return result
 }
 
