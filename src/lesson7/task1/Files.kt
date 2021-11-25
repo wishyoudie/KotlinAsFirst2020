@@ -94,7 +94,7 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
 
     for (currentString in File(inputName).readLines()) {
         for (element in substrings) {
-            if (element.length >= 2 && element + element[0] in currentString && element[1] == element[0]) {
+            if (element.length >= 2 && element.all { it == element[0] } && element + element[0] in currentString) {
                 result[element] = result[element]!! + (currentString.replace(element + element[0], element).length
                         - currentString.lowercase().replace(
                     (element + element[0]).lowercase(),
