@@ -64,16 +64,19 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  */
 fun deleteMarked(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
-    for (currentString in File(inputName).readLines()) {
-        if (currentString.isEmpty()) {
-            writer.write(currentString + "\n")
-        } else {
-            if (currentString[0] != '_' || currentString.isEmpty()) {
+    try {
+        for (currentString in File(inputName).readLines()) {
+            if (currentString.isEmpty()) {
                 writer.write(currentString + "\n")
+            } else {
+                if (currentString[0] != '_' || currentString.isEmpty()) {
+                    writer.write(currentString + "\n")
+                }
             }
         }
+    } finally {
+        writer.close()
     }
-    writer.close()
 }
 
 /**
@@ -93,24 +96,11 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     }
 
     for (currentString in File(inputName).readLines()) {
-        for (element in substrings.toSet()) { // result.keys
-
-            /*if (element.length >= 2 && element + element[0] in currentString && element.all { it == element[0] }) {
-                result[element] = result[element]!! + (currentString.replace(element + element[0], element).length
-                        - currentString.lowercase().replace(
-                    (element + element[0]).lowercase(),
-                    ""
-                ).length) / element.length
-            }
-            result[element] = result[element]!! + (currentString.length - currentString.lowercase().replace(
-                element.lowercase(),
-                ""
-            ).length) / element.length*/
-
+        for (element in result.keys) {
             if (element.length > currentString.length) continue
             var i = 0
             while (i <= currentString.length - element.length) {
-                if (currentString.substring(i,i + element.length).lowercase() == element.lowercase())
+                if (currentString.substring(i, i + element.length).lowercase() == element.lowercase())
                     result[element] = result[element]!! + 1
                 i++
             }
@@ -157,19 +147,22 @@ fun sibilants(inputName: String, outputName: String) {
 fun centerFile(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     var maxStringLength = 0
-    for (currentString in File(inputName).readLines()) {
-        if (currentString.trim().length > maxStringLength) {
-            maxStringLength = currentString.trim().length
+    try {
+        for (currentString in File(inputName).readLines()) {
+            if (currentString.trim().length > maxStringLength) {
+                maxStringLength = currentString.trim().length
+            }
         }
-    }
-    for (currentString in File(inputName).readLines()) {
-        val numberOfSpaces = (maxStringLength - currentString.trim().length) / 2
-        for (i in 1..numberOfSpaces) {
-            writer.write(" ")
+        for (currentString in File(inputName).readLines()) {
+            val numberOfSpaces = (maxStringLength - currentString.trim().length) / 2
+            for (i in 1..numberOfSpaces) {
+                writer.write(" ")
+            }
+            writer.write(currentString.trim() + "\n")
         }
-        writer.write(currentString.trim() + "\n")
+    } finally {
+        writer.close()
     }
-    writer.close()
 }
 
 /**
@@ -460,10 +453,10 @@ fun markdownToHtml(inputName: String, outputName: String) {
  * Вывести в выходной файл процесс умножения столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 111):
-   19935
-*    111
+19935
+ *    111
 --------
-   19935
+19935
 + 19935
 +19935
 --------
