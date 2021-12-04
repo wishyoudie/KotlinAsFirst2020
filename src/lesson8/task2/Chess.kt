@@ -2,6 +2,9 @@
 
 package lesson8.task2
 
+import java.lang.IllegalArgumentException
+import java.lang.Math.abs
+
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -22,7 +25,14 @@ data class Square(val column: Int, val row: Int) {
      * В нотации, колонки обозначаются латинскими буквами от a до h, а ряды -- цифрами от 1 до 8.
      * Для клетки не в пределах доски вернуть пустую строку
      */
-    fun notation(): String = TODO()
+    fun notation(): String {
+        val columns = listOf("a", "b", "c", "d", "e", "f", "g", "h")
+        return if (column in 1..8 && row in 1..8) {
+            columns[column - 1] + row.toString()
+        } else {
+            ""
+        }
+    }
 }
 
 /**
@@ -32,7 +42,15 @@ data class Square(val column: Int, val row: Int) {
  * В нотации, колонки обозначаются латинскими буквами от a до h, а ряды -- цифрами от 1 до 8.
  * Если нотация некорректна, бросить IllegalArgumentException
  */
-fun square(notation: String): Square = TODO()
+fun square(notation: String): Square {
+    val column = notation[0].code - 'a'.code + 1
+    val row = notation[1].toString().toInt()
+    if (column in 1..8 && row in 1..8) {
+        return Square(column, row)
+    } else {
+        throw IllegalArgumentException("")
+    }
+}
 
 /**
  * Простая (2 балла)
@@ -57,7 +75,17 @@ fun square(notation: String): Square = TODO()
  * Пример: rookMoveNumber(Square(3, 1), Square(6, 3)) = 2
  * Ладья может пройти через клетку (3, 3) или через клетку (6, 1) к клетке (6, 3).
  */
-fun rookMoveNumber(start: Square, end: Square): Int = TODO()
+fun rookMoveNumber(start: Square, end: Square): Int {
+    return if (start.column == end.column && start.row == end.row) {
+        0
+    } else if ((start.column == end.column && start.row != end.row) || (start.column != end.column && start.row == end.row)) {
+        1
+    } else if (start.column != end.column && start.row != end.row) {
+        2
+    } else {
+        throw IllegalArgumentException("")
+    }
+}
 
 /**
  * Средняя (3 балла)
@@ -73,7 +101,39 @@ fun rookMoveNumber(start: Square, end: Square): Int = TODO()
  *          rookTrajectory(Square(3, 5), Square(8, 5)) = listOf(Square(3, 5), Square(8, 5))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun rookTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun rookTrajectory(start: Square, end: Square): List<Square> {
+    var currentColumn = start.column
+    var currentRow = start.row
+    val result = mutableListOf(Square(currentColumn, currentRow))
+
+    if (start == end) {
+        return result
+    }
+
+    if (start.column != end.column) {
+        while (currentColumn != end.column) {
+            if (end.row > currentRow) {
+                currentColumn += 1
+            } else {
+                currentColumn -= 1
+            }
+        }
+        result.add(Square(currentColumn, currentRow))
+    }
+
+    if (start.row != end.row) {
+        while (currentRow != end.row) {
+            if (end.row > currentRow) {
+                currentRow += 1
+            } else {
+                currentRow -= 1
+            }
+        }
+        result.add(Square(currentColumn, currentRow))
+    }
+
+    return result
+}
 
 /**
  * Простая (2 балла)
@@ -140,7 +200,22 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int = TODO()
+fun kingMoveNumber(start: Square, end: Square): Int {
+    if (start == end) {
+        return 0
+    } else if (start.column == end.column && start.row != end.row){
+        return abs(start.row - end.row)
+    } else if (start.column != end.column && start.row == end.row) {
+        return abs(start.column - end.column)
+    } else if (abs(start.column - end.column) == abs(start.row - end.row)) {
+        return abs(start.column - end.column)
+    } else if (abs(start.column - end.column) != abs(start.row - end.row)) {
+        return 0
+    }
+    else {
+        throw IllegalArgumentException("")
+    }
+}
 
 /**
  * Сложная (5 баллов)
