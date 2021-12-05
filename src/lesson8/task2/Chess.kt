@@ -43,6 +43,9 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
+    if (notation.length != 2) {
+        throw IllegalArgumentException("")
+    }
     val column = notation[0].code - 'a'.code + 1
     val row = notation[1].toString().toInt()
     if (column in 1..8 && row in 1..8) {
@@ -76,6 +79,9 @@ fun square(notation: String): Square {
  * Ладья может пройти через клетку (3, 3) или через клетку (6, 1) к клетке (6, 3).
  */
 fun rookMoveNumber(start: Square, end: Square): Int {
+    if (start.column !in 1..8 || start.row !in 1..8 || end.column !in 1..8 || end.row !in 1..8) {
+        throw IllegalArgumentException("")
+    }
     return if (start.column == end.column && start.row == end.row) {
         0
     } else if ((start.column == end.column && start.row != end.row) || (start.column != end.column && start.row == end.row)) {
@@ -83,7 +89,7 @@ fun rookMoveNumber(start: Square, end: Square): Int {
     } else if (start.column != end.column && start.row != end.row) {
         2
     } else {
-        throw IllegalArgumentException()
+        throw IllegalArgumentException("")
     }
 }
 
@@ -105,6 +111,10 @@ fun rookTrajectory(start: Square, end: Square): List<Square> {
     var currentColumn = start.column
     var currentRow = start.row
     val result = mutableListOf(Square(currentColumn, currentRow))
+
+    if (start.column !in 1..8 || start.row !in 1..8 || end.column !in 1..8 || end.row !in 1..8) {
+        throw IllegalArgumentException("")
+    }
 
     if (start == end) {
         return result
@@ -200,22 +210,7 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int {
-    if (start == end) {
-        return 0
-    } else if (start.column == end.column && start.row != end.row){
-        return abs(start.row - end.row)
-    } else if (start.column != end.column && start.row == end.row) {
-        return abs(start.column - end.column)
-    } else if (abs(start.column - end.column) == abs(start.row - end.row)) {
-        return abs(start.column - end.column)
-    } else if (abs(start.column - end.column) != abs(start.row - end.row)) {
-        return 0
-    }
-    else {
-        throw IllegalArgumentException("")
-    }
-}
+fun kingMoveNumber(start: Square, end: Square): Int = TODO()
 
 /**
  * Сложная (5 баллов)
