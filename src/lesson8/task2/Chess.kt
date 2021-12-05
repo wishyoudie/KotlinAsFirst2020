@@ -2,7 +2,7 @@
 
 package lesson8.task2
 
-import java.lang.IllegalArgumentException
+import kotlin.IllegalArgumentException
 import java.lang.Math.abs
 
 /**
@@ -83,7 +83,7 @@ fun rookMoveNumber(start: Square, end: Square): Int {
     } else if (start.column != end.column && start.row != end.row) {
         2
     } else {
-        throw IllegalArgumentException("")
+        throw IllegalArgumentException()
     }
 }
 
