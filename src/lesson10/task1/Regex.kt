@@ -89,7 +89,7 @@ sealed class Expression {
                     throw IllegalArgumentException()
                 } else {
                     val originalNumber = left.calculate(x)
-                    var currentNumber = left.calculate(x)
+                    var currentNumber = originalNumber
                     for (i in 1 until power) {
                         currentNumber *= originalNumber
                     }

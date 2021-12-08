@@ -108,40 +108,22 @@ fun rookMoveNumber(start: Square, end: Square): Int {
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun rookTrajectory(start: Square, end: Square): List<Square> {
-    var currentColumn = start.column
-    var currentRow = start.row
-    val result = mutableListOf(Square(currentColumn, currentRow))
+    val result = mutableListOf<Square>()
 
     if (start.column !in 1..8 || start.row !in 1..8 || end.column !in 1..8 || end.row !in 1..8) {
         throw IllegalArgumentException("")
     }
 
     if (start == end) {
-        return result
+        result.add(Square(start.column, start.row))
+    } else if (start.column == end.column || start.row == end.row){
+        result.add(Square(start.column, start.row))
+        result.add(Square(end.column, end.row))
+    } else {
+        result.add(Square(start.column, start.row))
+        result.add(Square(end.column, start.row))
+        result.add(Square(end.column, end.row))
     }
-
-    if (start.column != end.column) {
-        while (currentColumn != end.column) {
-            if (end.row > currentRow) {
-                currentColumn += 1
-            } else {
-                currentColumn -= 1
-            }
-        }
-        result.add(Square(currentColumn, currentRow))
-    }
-
-    if (start.row != end.row) {
-        while (currentRow != end.row) {
-            if (end.row > currentRow) {
-                currentRow += 1
-            } else {
-                currentRow -= 1
-            }
-        }
-        result.add(Square(currentColumn, currentRow))
-    }
-
     return result
 }
 
